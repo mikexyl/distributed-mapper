@@ -26,9 +26,9 @@ namespace distributed_pcm {
          *
          * @param dist_mappers is the different distributed mappers in the system (one by robot)
          * @param graph_and_values is the collection of factors of all graph used for evaluation
-         * @returns size of the maximum clique of pairwise consistent measurements
+         * @returns size of the maximum clique of pairwise consistent measurements and number of outliers rejected
          */
-        static int solveCentralized(std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
+        static std::pair<int, int> solveCentralized(std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                 std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
                 const double& confidence_probability, const bool& use_covariance);
 
@@ -37,9 +37,9 @@ namespace distributed_pcm {
          *
          * @param dist_mappers is the different distributed mappers in the system (one by robot)
          * @param graph_and_values is the collection of factors of all graph used for evaluation
-         * @returns size of the maximum clique of pairwise consistent measurements
+         * @returns size of the maximum clique of pairwise consistent measurements and number of outliers rejected
          */
-        static int solveDecentralized(const int& other_robot_id,
+        static std::pair<int, int> solveDecentralized(const int& other_robot_id,
                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                 gtsam::GraphAndValues& local_graph_and_values,
                 const gtsam::Values& other_robot_poses,
@@ -62,14 +62,14 @@ namespace distributed_pcm {
                                         const int& other_robot_id,
                                         const bool& use_covariance);
 
-        static int executePCMCentralized(const int& roboti, const int& robotj, const std::vector<graph_utils::Transforms>& transforms_by_robot,
+        static std::pair<int, int> executePCMCentralized(const int& roboti, const int& robotj, const std::vector<graph_utils::Transforms>& transforms_by_robot,
                                         const std::vector<graph_utils::LoopClosures>& separators_by_robot,
                                         const std::map<std::pair<char, char>,graph_utils::Transforms>& separators_transforms_by_pair,
                                         std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                                         std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
                                         const double& confidence_probability);
 
-        static int executePCMDecentralized(const int& other_robot_id, const graph_utils::Transforms& transforms,
+        static std::pair<int, int> executePCMDecentralized(const int& other_robot_id, const graph_utils::Transforms& transforms,
                                         const graph_utils::LoopClosures& separators,
                                         const graph_utils::Trajectory& other_robot_trajectory,
                                         const graph_utils::Transforms& separators_transforms,

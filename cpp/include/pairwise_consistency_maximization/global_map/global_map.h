@@ -47,9 +47,9 @@ namespace global_map {
         /**
          * \brief Function that solves the global maps according to the current constraints
          *
-         * @return the size of the maximum clique.
+         * @return the size of the maximum clique and the number of outliers to be rejected.
          */
-        std::vector<int> pairwiseConsistencyMaximization();
+        std::pair<std::vector<int>, int> pairwiseConsistencyMaximization();
 
       private:
         pairwise_consistency::PairwiseConsistency pairwise_consistency_; ///< Pairwise consistency solver.

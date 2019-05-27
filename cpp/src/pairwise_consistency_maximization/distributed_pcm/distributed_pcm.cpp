@@ -4,7 +4,7 @@
 
 namespace distributed_pcm {
 
-    int DistributedPCM::solveCentralized(std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
+    std::pair<int, int> DistributedPCM::solveCentralized(std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
             std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
             const double& confidence_probability, const bool& use_covariance) {
 
@@ -17,21 +17,23 @@ namespace distributed_pcm {
 
         // Apply PCM for each pair of robots
         int total_max_clique_sizes = 0;
+        int total_outliers_rejected = 0;
         for (int roboti = 0; roboti < dist_mappers.size(); roboti++) {
             for (int robotj = roboti+1; robotj < dist_mappers.size(); robotj++) {
 
-                int max_clique_size = executePCMCentralized(roboti, robotj, transforms_by_robot, separators_by_robot,
+                auto max_clique_info = executePCMCentralized(roboti, robotj, transforms_by_robot, separators_by_robot,
                 separators_transforms_by_pair, dist_mappers,
                 graph_and_values_vector, confidence_probability);
 
-                total_max_clique_sizes += max_clique_size;
+                total_max_clique_sizes += max_clique_info.first;
+                total_outliers_rejected += max_clique_info.second;
             }
         }
 
-        return total_max_clique_sizes;
+        return std::make_pair(total_max_clique_sizes, total_outliers_rejected);
     }
 
-    int DistributedPCM::solveDecentralized(const int& other_robot_id,
+    std::pair<int, int> DistributedPCM::solveDecentralized(const int& other_robot_id,
                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                 gtsam::GraphAndValues& local_graph_and_values,
                 const gtsam::Values& other_robot_poses,
@@ -46,12 +48,12 @@ namespace distributed_pcm {
                 dist_mapper, other_robot_poses, other_robot_id, use_covariance);
 
         // Apply PCM for each pair of robots
-        int max_clique_size = executePCMDecentralized(other_robot_id, transforms,
+        auto max_clique_info = executePCMDecentralized(other_robot_id, transforms,
                                                     separators, other_robot_trajectory,
                                                     separators_transforms, dist_mapper,
                                                     local_graph_and_values, confidence_probability);
 
-        return max_clique_size;
+        return max_clique_info;
     }
 
     void DistributedPCM::fillInRequiredInformationCentralized(std::vector<graph_utils::LoopClosures>& separators_by_robot,
@@ -193,7 +195,7 @@ namespace distributed_pcm {
         other_robot_trajectory.end_id = last_key;
     }
 
-    int DistributedPCM::executePCMCentralized(const int& roboti, const int& robotj, const std::vector<graph_utils::Transforms>& transforms_by_robot,
+    std::pair<int, int> DistributedPCM::executePCMCentralized(const int& roboti, const int& robotj, const std::vector<graph_utils::Transforms>& transforms_by_robot,
                 const std::vector<graph_utils::LoopClosures>& separators_by_robot,
                 const std::map<std::pair<char, char>,graph_utils::Transforms>& separators_transforms_by_pair,
                 std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
@@ -205,7 +207,8 @@ namespace distributed_pcm {
         auto interrobot_measurements = robot_measurements::InterRobotMeasurements(roboti_robotj_separators_transforms, dist_mappers[roboti]->robotName(), dist_mappers[robotj]->robotName());
 
         auto global_map = global_map::GlobalMap(roboti_local_map, robotj_local_map, interrobot_measurements, confidence_probability);
-        std::vector<int> max_clique = global_map.pairwiseConsistencyMaximization();
+        auto max_clique_info = global_map.pairwiseConsistencyMaximization();
+        std::vector<int> max_clique = max_clique_info.first;
 
         // Retrieve indexes of rejected measurements
         auto robot_pair = {roboti, robotj};
@@ -243,10 +246,10 @@ namespace distributed_pcm {
             }
             dist_mappers[robot]->setSeparatorIds(new_separator_ids);
         }
-        return max_clique.size();
+        return std::make_pair(max_clique.size(), max_clique_info.second);
     }
 
-    int DistributedPCM::executePCMDecentralized(const int& other_robot_id, const graph_utils::Transforms& transforms,
+    std::pair<int, int> DistributedPCM::executePCMDecentralized(const int& other_robot_id, const graph_utils::Transforms& transforms,
                                             const graph_utils::LoopClosures& separators,
                                             const graph_utils::Trajectory& other_robot_trajectory,
                                             const graph_utils::Transforms& separators_transforms,
@@ -262,7 +265,8 @@ namespace distributed_pcm {
                                                                                 dist_mapper->robotName(), ((char) other_robot_id + 97));
 
         auto global_map = global_map::GlobalMap(robot_local_map, other_robot_local_info, interrobot_measurements, confidence_probability);
-        std::vector<int> max_clique = global_map.pairwiseConsistencyMaximization();
+        auto max_clique_info = global_map.pairwiseConsistencyMaximization();
+        std::vector<int> max_clique = max_clique_info.first;
 
         // Retrieve indexes of rejected measurements
         auto separators_ids = dist_mapper->separatorEdge();
@@ -298,7 +302,7 @@ namespace distributed_pcm {
         }
         dist_mapper->setSeparatorIds(new_separator_ids);
 
-        return max_clique.size();
+        return std::make_pair(max_clique.size(), max_clique_info.second);
     }
 
     bool DistributedPCM::isSeparatorToBeRejected(const std::vector<int>& max_clique, const int& separtor_id, const graph_utils::Transforms& separators_transforms,

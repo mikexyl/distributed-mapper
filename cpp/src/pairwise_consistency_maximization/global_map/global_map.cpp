@@ -26,7 +26,7 @@ GlobalMap::GlobalMap(const robot_measurements::RobotLocalMap& robot1_local_map,
                             robot1_local_map.getNbDegreeFreedom(), confidence_probability){}
 
 
-std::vector<int> GlobalMap::pairwiseConsistencyMaximization() {
+std::pair<std::vector<int>, int> GlobalMap::pairwiseConsistencyMaximization() {
     // Compute consistency matrix
     Eigen::MatrixXi consistency_matrix = pairwise_consistency_.computeConsistentMeasurementsMatrix();
     graph_utils::printConsistencyGraph(consistency_matrix, CONSISTENCY_MATRIX_FILE_NAME);
@@ -41,7 +41,8 @@ std::vector<int> GlobalMap::pairwiseConsistencyMaximization() {
     // Print results
     graph_utils::printConsistentLoopClosures(pairwise_consistency_.getLoopClosures(), max_clique_data, CONSISTENCY_LOOP_CLOSURES_FILE_NAME);
 
-    return max_clique_data;
+    int number_of_loop_closures_to_be_rejected = pairwise_consistency_.getLoopClosures().size() - max_clique_data.size();
+    return std::make_pair(max_clique_data, number_of_loop_closures_to_be_rejected);
 }
 
 }
