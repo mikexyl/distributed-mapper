@@ -130,13 +130,24 @@ class DistributedMapper{
               boost::dynamic_pointer_cast<gtsam::PriorFactor<gtsam::Pose3> >(graph_.at(k));
           if (pose3_prior){
             graph_.remove(k);
-            inner_edges_.remove(k);
-            chordal_graph_.remove(k);
-            createLinearOrientationGraph(); // linear orientation graph
             break;
           }
         }
       }
+      for(size_t k=0; k < inner_edges_.size(); k++){
+        if(!inner_edges_.at(k))continue;
+        gtsam::KeyVector keys = inner_edges_.at(k)->keys();
+        if (keys.size() != 2){
+          boost::shared_ptr<gtsam::PriorFactor<gtsam::Pose3> > pose3_prior =
+              boost::dynamic_pointer_cast<gtsam::PriorFactor<gtsam::Pose3> >(inner_edges_.at(k));
+          if (pose3_prior){
+            inner_edges_.remove(k);
+            chordal_graph_.remove(k);
+            break;
+          }
+        }
+      }      
+      createLinearOrientationGraph(); // linear orientation graph
     }
 
     /** @brief chordalFactorGraph generates a graph of BetweenChordalFactors using innerEdges required for distributed pose estimation*/
