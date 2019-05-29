@@ -43,7 +43,8 @@ namespace distributed_pcm {
                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                 gtsam::GraphAndValues& local_graph_and_values,
                 const gtsam::Values& other_robot_poses,
-                const double& confidence_probability, const bool& use_covariance);
+                const double& confidence_probability, const bool& use_covariance,
+                const bool& is_prior_added);
 
         private:
 
@@ -75,7 +76,8 @@ namespace distributed_pcm {
                                         const graph_utils::Transforms& separators_transforms,
                                         boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                         gtsam::GraphAndValues& local_graph_and_values,
-                                        const double& confidence_probability);
+                                        const double& confidence_probability,
+                                        const bool& is_prior_added);
 
         static bool isSeparatorToBeRejected(const std::vector<int>& max_clique, const int& separtor_id, const graph_utils::Transforms& separators_transforms,
                                                      const graph_utils::LoopClosures& loop_closures, boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper);

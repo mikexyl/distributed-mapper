@@ -37,7 +37,8 @@ namespace distributed_pcm {
                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                 gtsam::GraphAndValues& local_graph_and_values,
                 const gtsam::Values& other_robot_poses,
-                const double& confidence_probability, const bool& use_covariance) {
+                const double& confidence_probability, const bool& use_covariance,
+                const bool& is_prior_added) {
 
         graph_utils::LoopClosures separators;
         graph_utils::Transforms transforms;
@@ -51,7 +52,7 @@ namespace distributed_pcm {
         auto max_clique_info = executePCMDecentralized(other_robot_id, transforms,
                                                     separators, other_robot_trajectory,
                                                     separators_transforms, dist_mapper,
-                                                    local_graph_and_values, confidence_probability);
+                                                    local_graph_and_values, confidence_probability, is_prior_added);
 
         return max_clique_info;
     }
@@ -255,7 +256,8 @@ namespace distributed_pcm {
                                             const graph_utils::Transforms& separators_transforms,
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                             gtsam::GraphAndValues& local_graph_and_values,
-                                            const double& confidence_probability){
+                                            const double& confidence_probability,
+                                            const bool& is_prior_added){
 
         auto robot_local_map = robot_measurements::RobotLocalMap(transforms, separators);
         graph_utils::Transforms empty_transforms;
@@ -288,7 +290,7 @@ namespace distributed_pcm {
         // Update separator ids
         std::vector<size_t> new_separator_ids;
         int number_of_edges = dist_mapper->currentGraph().size();
-        if (((int) dist_mapper->robotName()-97) == 0){
+        if (is_prior_added){
             // Do not count the prior in the first robot graph
             number_of_edges--;
         }
