@@ -417,7 +417,7 @@ namespace evaluation_utils{
   GraphAndValues readFullGraph(const size_t& nr_robots, // number of robots
                                const vector<GraphAndValues>& graph_and_values_vec  // vector of all graphs and initials for each robot
   ) {
-    std::cout << "Creating full_graph by combining subgraphs." << std::endl;
+    //std::cout << "Creating full_graph by combining subgraphs." << std::endl;
 
     // Combined graph and Values
     NonlinearFactorGraph::shared_ptr combined_graph(new NonlinearFactorGraph);
@@ -473,7 +473,8 @@ namespace evaluation_utils{
                                               const gtsam::noiseModel::Diagonal::shared_ptr &prior_model,
                                               const gtsam::noiseModel::Isotropic::shared_ptr &model,
                                               const bool &use_between_noise,
-                                              const gtsam::Values &distributed_estimates) {
+                                              const gtsam::Values &distributed_estimates,
+                                              const bool& debug) {
     ////////////////////////////////////////////////////////////////////////////////
     // Extract full graph and add prior
     ////////////////////////////////////////////////////////////////////////////////
@@ -497,7 +498,9 @@ namespace evaluation_utils{
     // Initial Error
     ////////////////////////////////////////////////////////////////////////////////
     double initial_error = chordal_graph.error(full_initial);
-    std::cout << "Initial Error: " << initial_error << std::endl;
+    if (debug) {
+      std::cout << "Initial Error: " << initial_error << std::endl;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Centralized Two Stage
@@ -509,7 +512,9 @@ namespace evaluation_utils{
     std::string dataset_file_name = "log/datasets/centralized.g2o";
     gtsam::writeG2o(full_graph_with_prior, centralized, dataset_file_name);
     double centralized_error = chordal_graph.error(centralized);
-    std::cout << "Centralized Two Stage Error: " << centralized_error << std::endl;
+    if (debug) {
+      std::cout << "Centralized Two Stage Error: " << centralized_error << std::endl;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Centralized Two Stage + Gauss Newton
@@ -517,13 +522,17 @@ namespace evaluation_utils{
     Values chordal_GN = centralizedGNEstimation(full_graph_with_prior,
                                                                    model, prior_model,
                                                                    use_between_noise);
-    std::cout << "Centralized Two Stage + GN Error: " << chordal_graph.error(chordal_GN) << std::endl;
+    if (debug) {                                                               
+      std::cout << "Centralized Two Stage + GN Error: " << chordal_graph.error(chordal_GN) << std::endl;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Distributed Error
     ////////////////////////////////////////////////////////////////////////////////
     double distributed_error = chordal_graph.error(distributed_estimates);
-    std::cout << "Distributed Error: " << distributed_error << std::endl;
+    if (debug) {
+      std::cout << "Distributed Error: " << distributed_error << std::endl;
+    }
 
     return std::make_tuple(centralized_error, distributed_error, initial_error);
   }
