@@ -47,6 +47,10 @@ void RobotMeasurements::addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& f
             std::make_pair(std::make_pair(factor.key1(), factor.key2()), transform));
 }
 
+void RobotMeasurements::removeTransform(const std::pair<gtsam::Key,gtsam::Key>& index) {
+    transforms_.transforms.erase(index);
+}
+
 const graph_utils::Transforms& RobotMeasurements::getTransforms() const {
     return transforms_;
 }

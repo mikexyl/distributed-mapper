@@ -36,7 +36,7 @@ namespace distributed_pcm {
     std::pair<int, int> DistributedPCM::solveDecentralized(const int& other_robot_id,
                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                 gtsam::GraphAndValues& local_graph_and_values,
-                const robot_measurements::RobotLocalMap& robot_local_map,
+                robot_measurements::RobotLocalMap& robot_local_map,
                 const graph_utils::Trajectory& other_robot_trajectory,
                 const double& confidence_probability,
                 const bool& is_prior_added) {
@@ -44,18 +44,9 @@ namespace distributed_pcm {
         graph_utils::Transforms empty_transforms;
         auto other_robot_local_info = robot_measurements::RobotLocalMap(other_robot_trajectory, empty_transforms, robot_local_map.getLoopClosures());
 
-        graph_utils::Transforms roboti_robotj_separators_transforms;
-        for (const auto& transform : robot_local_map.getTransforms().transforms) {
-            auto id_1 = (int) (gtsam::Symbol(transform.second.i).chr()-97);
-            auto id_2 = (int) (gtsam::Symbol(transform.second.j).chr()-97);
-            if (id_1 == other_robot_id || id_2 == other_robot_id) {
-                roboti_robotj_separators_transforms.transforms.insert(transform);
-            }
-        }
-
         // Apply PCM for each pair of robots
         auto max_clique_info = executePCMDecentralized(other_robot_id, robot_local_map, other_robot_local_info,
-                                            roboti_robotj_separators_transforms, dist_mapper, local_graph_and_values,
+                                            dist_mapper, local_graph_and_values,
                                             confidence_probability, is_prior_added);
 
         return max_clique_info;
@@ -176,13 +167,21 @@ namespace distributed_pcm {
         return std::make_pair(max_clique.size(), max_clique_info.second);
     }
 
-    std::pair<int, int> DistributedPCM::executePCMDecentralized(const int& other_robot_id, const robot_measurements::RobotLocalMap& robot_local_map,
+    std::pair<int, int> DistributedPCM::executePCMDecentralized(const int& other_robot_id, robot_measurements::RobotLocalMap& robot_local_map,
                                             const robot_measurements::RobotLocalMap& other_robot_local_info,
-                                            const graph_utils::Transforms& roboti_robotj_separators_transforms,
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                             gtsam::GraphAndValues& local_graph_and_values,
                                             const double& confidence_probability,
                                             const bool& is_prior_added){
+
+        graph_utils::Transforms roboti_robotj_separators_transforms;
+        for (const auto& transform : robot_local_map.getTransforms().transforms) {
+            auto id_1 = (int) (gtsam::Symbol(transform.second.i).chr()-97);
+            auto id_2 = (int) (gtsam::Symbol(transform.second.j).chr()-97);
+            if (id_1 == other_robot_id || id_2 == other_robot_id) {
+                roboti_robotj_separators_transforms.transforms.insert(transform);
+            }
+        }
 
         auto interrobot_measurements = robot_measurements::InterRobotMeasurements(roboti_robotj_separators_transforms, 
                                                                                 dist_mapper->robotName(), ((char) other_robot_id + 97));
@@ -198,6 +197,10 @@ namespace distributed_pcm {
             if (isSeparatorToBeRejected(max_clique, separators_ids[i], roboti_robotj_separators_transforms,
                                         interrobot_measurements.getLoopClosures(), dist_mapper)) {
                 rejected_separator_ids.emplace_back(i);
+
+                // Update robot local map
+                auto separator_factor = boost::dynamic_pointer_cast<gtsam::BetweenFactor<gtsam::Pose3> >(dist_mapper->currentGraph().at(separators_ids[i]));
+                robot_local_map.removeTransform(std::make_pair(separator_factor->keys().at(0), separator_factor->keys().at(1)));
             }
         }
         // Remove measurements not in the max clique

@@ -50,7 +50,6 @@ void RobotLocalMap::addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& facto
     trajectory_.trajectory_poses.insert(std::make_pair(current_pose.id, current_pose));
 }
 
-
 const graph_utils::Trajectory& RobotLocalMap::getTrajectory() const {
     return trajectory_;
 }

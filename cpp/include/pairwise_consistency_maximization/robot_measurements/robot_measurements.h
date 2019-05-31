@@ -32,9 +32,13 @@ namespace robot_measurements {
          * Mutators
          */
         
-        /** \brief Add a transform to the map
+        /** \brief Add a transform in the map
          */
         virtual void addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& factor, const gtsam::Matrix& covariance_matrix);
+
+        /** \brief Remove a transform in the map
+         */
+        void removeTransform(const std::pair<gtsam::Key,gtsam::Key>& index);
 
         /*
          * Accessors

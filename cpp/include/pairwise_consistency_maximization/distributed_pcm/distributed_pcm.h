@@ -40,12 +40,12 @@ namespace distributed_pcm {
          * @returns size of the maximum clique of pairwise consistent measurements and number of outliers rejected
          */
         static std::pair<int, int> solveDecentralized(const int& other_robot_id,
-                boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
-                gtsam::GraphAndValues& local_graph_and_values,
-                const robot_measurements::RobotLocalMap& robot_local_map,
-                const graph_utils::Trajectory& other_robot_trajectory,
-                const double& confidence_probability,
-                const bool& is_prior_added);
+                                boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
+                                gtsam::GraphAndValues& local_graph_and_values,
+                                robot_measurements::RobotLocalMap& robot_local_map,
+                                const graph_utils::Trajectory& other_robot_trajectory,
+                                const double& confidence_probability,
+                                const bool& is_prior_added);
 
         private:
 
@@ -62,9 +62,8 @@ namespace distributed_pcm {
                                         std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
                                         const double& confidence_probability);
 
-        static std::pair<int, int> executePCMDecentralized(const int& other_robot_id, const robot_measurements::RobotLocalMap& robot_local_map,
+        static std::pair<int, int> executePCMDecentralized(const int& other_robot_id, robot_measurements::RobotLocalMap& robot_local_map,
                                             const robot_measurements::RobotLocalMap& other_robot_local_info,
-                                            const graph_utils::Transforms& roboti_robotj_separators_transforms,
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                             gtsam::GraphAndValues& local_graph_and_values,
                                             const double& confidence_probability,
