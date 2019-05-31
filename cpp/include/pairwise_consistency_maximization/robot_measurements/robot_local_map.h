@@ -24,6 +24,19 @@ namespace robot_measurements {
                       const graph_utils::Transforms& transforms,
                       const graph_utils::LoopClosures& loop_closures);
 
+        /**
+         * \brief Constructor
+         */
+        RobotLocalMap();
+
+        /*
+         * Mutators
+         */
+        
+        /** \brief Add a transform to the map
+         */
+        virtual void addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& factor, const gtsam::Matrix& covariance_matrix);
+
         /*
          * Accessors
          */

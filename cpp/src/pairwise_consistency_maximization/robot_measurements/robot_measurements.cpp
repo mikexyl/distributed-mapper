@@ -13,6 +13,40 @@ RobotMeasurements::RobotMeasurements(const graph_utils::Transforms& transforms,
     nb_degree_freedom_ = 6; // TODO: support 2D case
 }
 
+RobotMeasurements::RobotMeasurements(){
+    nb_degree_freedom_ = 6; // TODO: support 2D case
+    num_poses_ = 1;      
+    id_initialized_ = false;   
+}
+
+void RobotMeasurements::addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& factor, const gtsam::Matrix& covariance_matrix) {
+    graph_utils::Transform transform;
+    transform.i = factor.key1();
+    transform.j = factor.key2();
+    transform.pose.pose = factor.measured();
+    transform.pose.covariance_matrix = covariance_matrix;
+    
+    transform.is_separator = false;
+    if (gtsam::Symbol(transform.i).chr() != gtsam::Symbol(transform.j).chr()) {
+        transform.is_separator = true;
+        loop_closures_.emplace_back(std::make_pair(transform.i, transform.j));
+    }
+
+    if (!transform.is_separator) {
+        if (!id_initialized_) {
+            transforms_.start_id = transform.i;
+            transforms_.end_id = transform.j;
+            id_initialized_ = true;
+        } else {
+            transforms_.start_id = std::min(transforms_.start_id, transform.i);
+            transforms_.end_id = std::max(transforms_.end_id, transform.j);
+        }
+        num_poses_++;
+    }
+    transforms_.transforms.insert(
+            std::make_pair(std::make_pair(factor.key1(), factor.key2()), transform));
+}
+
 const graph_utils::Transforms& RobotMeasurements::getTransforms() const {
     return transforms_;
 }

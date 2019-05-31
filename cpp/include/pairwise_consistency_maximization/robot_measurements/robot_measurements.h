@@ -19,10 +19,22 @@ namespace robot_measurements {
       public:
         /**
          * \brief Constructor
-         * @param file_name
          */
         RobotMeasurements(const graph_utils::Transforms& transforms,
                         const graph_utils::LoopClosures& loop_closures);
+
+        /**
+         * \brief Constructor
+         */
+        RobotMeasurements();
+
+        /*
+         * Mutators
+         */
+        
+        /** \brief Add a transform to the map
+         */
+        virtual void addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& factor, const gtsam::Matrix& covariance_matrix);
 
         /*
          * Accessors
@@ -53,6 +65,7 @@ namespace robot_measurements {
         size_t num_poses_; ///< Number of poses in the map
         graph_utils::LoopClosures loop_closures_; ///< std::vector containing the ID pairs of the loop closures
         uint8_t nb_degree_freedom_; ///< Number of degree of freedom of the measurements, typically 3 in 2D and 6 in 3D.
+        bool id_initialized_; ///< Flags to indicate that the start_id and end_id of the transforms are initialized
     };          
 }
 

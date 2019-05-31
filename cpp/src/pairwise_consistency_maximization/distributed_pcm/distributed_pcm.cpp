@@ -36,23 +36,27 @@ namespace distributed_pcm {
     std::pair<int, int> DistributedPCM::solveDecentralized(const int& other_robot_id,
                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                 gtsam::GraphAndValues& local_graph_and_values,
-                const gtsam::Values& other_robot_poses,
-                const double& confidence_probability, const bool& use_covariance,
+                const robot_measurements::RobotLocalMap& robot_local_map,
+                const graph_utils::Trajectory& other_robot_trajectory,
+                const double& confidence_probability,
                 const bool& is_prior_added) {
 
-        graph_utils::LoopClosures separators;
-        graph_utils::Transforms transforms;
-        graph_utils::Trajectory other_robot_trajectory;
-        graph_utils::Transforms separators_transforms;
+        graph_utils::Transforms empty_transforms;
+        auto other_robot_local_info = robot_measurements::RobotLocalMap(other_robot_trajectory, empty_transforms, robot_local_map.getLoopClosures());
 
-        fillInRequiredInformationDecentralized(separators, transforms, other_robot_trajectory, separators_transforms,
-                dist_mapper, other_robot_poses, other_robot_id, use_covariance);
+        graph_utils::Transforms roboti_robotj_separators_transforms;
+        for (const auto& transform : robot_local_map.getTransforms().transforms) {
+            auto id_1 = (int) (gtsam::Symbol(transform.second.i).chr()-97);
+            auto id_2 = (int) (gtsam::Symbol(transform.second.j).chr()-97);
+            if (id_1 == other_robot_id || id_2 == other_robot_id) {
+                roboti_robotj_separators_transforms.transforms.insert(transform);
+            }
+        }
 
         // Apply PCM for each pair of robots
-        auto max_clique_info = executePCMDecentralized(other_robot_id, transforms,
-                                                    separators, other_robot_trajectory,
-                                                    separators_transforms, dist_mapper,
-                                                    local_graph_and_values, confidence_probability, is_prior_added);
+        auto max_clique_info = executePCMDecentralized(other_robot_id, robot_local_map, other_robot_local_info,
+                                            roboti_robotj_separators_transforms, dist_mapper, local_graph_and_values,
+                                            confidence_probability, is_prior_added);
 
         return max_clique_info;
     }
@@ -118,84 +122,6 @@ namespace distributed_pcm {
         }
     }
 
-    void DistributedPCM::fillInRequiredInformationDecentralized(graph_utils::LoopClosures& separators,
-                        graph_utils::Transforms& transforms,
-                        graph_utils::Trajectory& other_robot_trajectory,
-                        graph_utils::Transforms& separators_transforms,
-                        const boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
-                        const gtsam::Values& other_robot_poses,
-                        const int& other_robot_id,
-                        const bool& use_covariance){
-        // Store separators key pairs
-        for (auto id : dist_mapper->separatorEdge()) {
-            auto separator_edge = boost::dynamic_pointer_cast<gtsam::BetweenFactor<gtsam::Pose3> >(
-                    dist_mapper->currentGraph().at(id));
-            separators.emplace_back(std::make_pair(separator_edge->key1(), separator_edge->key2()));
-        }
-
-        bool id_initialized = false;
-        for (const auto& factor_ptr : dist_mapper->currentGraph()) {
-            auto edge_ptr = boost::dynamic_pointer_cast<gtsam::BetweenFactor<gtsam::Pose3> >(factor_ptr);
-            if (edge_ptr) { // Do nothing with the prior in the first robot graph
-                graph_utils::Transform transform;
-                transform.i = edge_ptr->key1();
-                transform.j = edge_ptr->key2();
-                transform.pose.pose = edge_ptr->measured();
-                if (use_covariance) {
-                    transform.pose.covariance_matrix =
-                            boost::dynamic_pointer_cast< gtsam::noiseModel::Gaussian >(edge_ptr->noiseModel())->covariance();
-                } else {
-                    transform.pose.covariance_matrix = graph_utils::FIXED_COVARIANCE;
-                }
-                transform.is_separator = std::find(separators.begin(), separators.end(),
-                                                    std::make_pair(edge_ptr->key1(), edge_ptr->key2())) !=
-                                            separators.end();
-                if (!transform.is_separator) {
-                    if (!id_initialized) {
-                        transforms.start_id = transform.i;
-                        transforms.end_id = transform.j;
-                        id_initialized = true;
-                    } else {
-                        transforms.start_id = std::min(transforms.start_id, transform.i);
-                        transforms.end_id = std::max(transforms.end_id, transform.j);
-                    }
-                    transforms.transforms.insert(
-                            std::make_pair(std::make_pair(edge_ptr->key1(), edge_ptr->key2()), transform));
-                } else {
-                    auto id_1 = gtsam::Symbol(edge_ptr->key1()).chr()-97;
-                    auto id_2 = gtsam::Symbol(edge_ptr->key2()).chr()-97;
-                    if (id_1 == other_robot_id || id_2 == other_robot_id) {
-                        separators_transforms.transforms.insert(
-                                std::make_pair(std::make_pair(edge_ptr->key1(), edge_ptr->key2()), transform));
-                    }
-                }
-            }
-        }
-
-        // Fill in the other robot poses in a trajectory structure
-        gtsam::Key first_key, last_key;
-        bool init_first = false;
-        bool init_last = false;
-        for (const gtsam::Values::ConstKeyValuePair& key_value_pair : other_robot_poses) {  
-            if (first_key > key_value_pair.key || !init_first) {
-                first_key = key_value_pair.key;
-                init_first = true;
-            }
-            if (last_key < key_value_pair.key || !init_last) {
-                last_key = key_value_pair.key;
-                init_last = true;
-            }
-
-            graph_utils::TrajectoryPose trajectory_pose;
-            trajectory_pose.id = key_value_pair.key;
-            trajectory_pose.pose.pose = other_robot_poses.at<gtsam::Pose3>(key_value_pair.key);
-            trajectory_pose.pose.covariance_matrix = graph_utils::FIXED_COVARIANCE;
-            other_robot_trajectory.trajectory_poses.insert(std::make_pair(key_value_pair.key, trajectory_pose));
-        }
-        other_robot_trajectory.start_id = first_key;
-        other_robot_trajectory.end_id = last_key;
-    }
-
     std::pair<int, int> DistributedPCM::executePCMCentralized(const int& roboti, const int& robotj, const std::vector<graph_utils::Transforms>& transforms_by_robot,
                 const std::vector<graph_utils::LoopClosures>& separators_by_robot,
                 const std::map<std::pair<char, char>,graph_utils::Transforms>& separators_transforms_by_pair,
@@ -250,19 +176,14 @@ namespace distributed_pcm {
         return std::make_pair(max_clique.size(), max_clique_info.second);
     }
 
-    std::pair<int, int> DistributedPCM::executePCMDecentralized(const int& other_robot_id, const graph_utils::Transforms& transforms,
-                                            const graph_utils::LoopClosures& separators,
-                                            const graph_utils::Trajectory& other_robot_trajectory,
-                                            const graph_utils::Transforms& separators_transforms,
+    std::pair<int, int> DistributedPCM::executePCMDecentralized(const int& other_robot_id, const robot_measurements::RobotLocalMap& robot_local_map,
+                                            const robot_measurements::RobotLocalMap& other_robot_local_info,
+                                            const graph_utils::Transforms& roboti_robotj_separators_transforms,
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                             gtsam::GraphAndValues& local_graph_and_values,
                                             const double& confidence_probability,
                                             const bool& is_prior_added){
 
-        auto robot_local_map = robot_measurements::RobotLocalMap(transforms, separators);
-        graph_utils::Transforms empty_transforms;
-        auto other_robot_local_info = robot_measurements::RobotLocalMap(other_robot_trajectory, empty_transforms, separators);
-        auto roboti_robotj_separators_transforms = separators_transforms;
         auto interrobot_measurements = robot_measurements::InterRobotMeasurements(roboti_robotj_separators_transforms, 
                                                                                 dist_mapper->robotName(), ((char) other_robot_id + 97));
 

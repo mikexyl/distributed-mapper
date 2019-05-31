@@ -8,6 +8,7 @@
 #include <gtsam/geometry/Pose3.h>
 #include <gtsam/geometry/Rot3.h>
 #include <gtsam/slam/BetweenFactor.h>
+#include <gtsam/inference/Symbol.h>
 
 #include <map>
 #include <vector>
