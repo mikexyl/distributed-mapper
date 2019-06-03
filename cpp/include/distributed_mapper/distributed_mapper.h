@@ -407,7 +407,17 @@ class DistributedMapper{
 
     /** @brief trace returns the trace */
     std::pair<double, double> latestError()
-    {return std::make_pair(rotation_error_trace_.back(), pose_error_trace_.back());}
+    {
+      double rotation_error = 0;
+      double pose_error = 0;
+      if (!rotation_error_trace_.empty()) {
+        rotation_error = rotation_error_trace_.back();
+      }
+      if (!pose_error_trace_.empty()) {
+        pose_error = pose_error_trace_.back();
+      }
+      return std::make_pair(rotation_error, pose_error);
+    }
 
     /** @brief traceEstimateChange returns the trace of change in estimate */
     std::pair<std::vector<double>, std::vector<double> > traceEstimateChange()
