@@ -188,7 +188,14 @@ namespace distributed_mapper{
                                                 const bool& use_between_noise,
                                                 const gtsam::Values& distributed_estimates,
                                                 const bool& debug);
-
+    /**
+     *  @brief function to get centralized estimates
+     *  @returns a pair with Centralized Two Stage estimates and Centralized Two Stage + Gauss Newton estimates
+     */
+    std::pair<gtsam::Values, gtsam::Values> centralizedEstimates(const gtsam::GraphAndValues &full_graph_and_values,
+                                const gtsam::noiseModel::Diagonal::shared_ptr &prior_model,
+                                const gtsam::noiseModel::Isotropic::shared_ptr &model,
+                                const bool &use_between_noise); 
     /**
      * @brief readFullGraph reads the full graph if it is present in the directory, otherwise creates it
      * @param nr_robots is the number of robots

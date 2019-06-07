@@ -523,8 +523,8 @@ namespace evaluation_utils{
                                                                    model, prior_model,
                                                                    use_between_noise);
 
-    std::string dataset_file_name = "log/datasets/centralized.g2o";
-    gtsam::writeG2o(full_graph_with_prior, centralized, dataset_file_name);
+    //std::string dataset_file_name = "log/datasets/centralized.g2o";
+    //gtsam::writeG2o(full_graph_with_prior, centralized, dataset_file_name);
     double centralized_error = chordal_graph.error(centralized);
     if (debug) {
       std::cout << "Centralized Two Stage Error: " << centralized_error << std::endl;
@@ -549,6 +549,40 @@ namespace evaluation_utils{
     }
 
     return std::make_tuple(centralized_error, distributed_error, initial_error);
+  }
+
+  std::pair<Values, Values> centralizedEstimates(const gtsam::GraphAndValues &full_graph_and_values,
+                                const gtsam::noiseModel::Diagonal::shared_ptr &prior_model,
+                                const gtsam::noiseModel::Isotropic::shared_ptr &model,
+                                const bool &use_between_noise) {
+    ////////////////////////////////////////////////////////////////////////////////
+    // Extract full graph and add prior
+    ////////////////////////////////////////////////////////////////////////////////
+    NonlinearFactorGraph full_graph = *(full_graph_and_values.first);
+    Values full_initial = *(full_graph_and_values.second);
+
+    // Add prior
+    NonlinearFactorGraph full_graph_with_prior = full_graph.clone();
+    Key prior_key = KeyVector(full_initial.keys()).at(0);
+    NonlinearFactor::shared_ptr prior(
+        new PriorFactor<Pose3>(prior_key, full_initial.at<Pose3>(prior_key), prior_model));
+    full_graph_with_prior.push_back(prior);
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Centralized Two Stage
+    ////////////////////////////////////////////////////////////////////////////////
+    Values centralized = centralizedEstimation(full_graph_with_prior,
+                                                model, prior_model,
+                                                use_between_noise);
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Centralized Two Stage + Gauss Newton
+    ////////////////////////////////////////////////////////////////////////////////
+    Values chordal_GN = centralizedGNEstimation(full_graph_with_prior,
+                                                model, prior_model,
+                                                use_between_noise);
+
+    return std::make_pair(centralized, chordal_GN);
   }
 }
 }
