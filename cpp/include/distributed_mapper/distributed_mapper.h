@@ -311,6 +311,11 @@ class DistributedMapper{
       initial_ = evaluation_utils::retractPose3Global(initial_, linearized_poses_);
     }
 
+    /** @brief retractPose3Global performs global retraction using linearizedPoses and initial */
+    void retractPose3GlobalWithOffset(const gtsam::Point3& offset){
+      initial_ = evaluation_utils::retractPose3GlobalWithOffset(initial_, linearized_poses_, offset);
+    }
+
     /** @brief linearizedRotationAt returns the current rotation estimate at sym */
     gtsam::Vector linearizedRotationAt(const gtsam::Key& key){ return linearized_rotation_.at(key); }
 

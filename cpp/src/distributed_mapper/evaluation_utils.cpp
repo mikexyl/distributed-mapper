@@ -99,6 +99,20 @@ namespace evaluation_utils{
   }
 
   //*****************************************************************************
+  Values retractPose3GlobalWithOffset(const Values& initial, const VectorValues& delta, const gtsam::Point3& offset) {
+    Values estimate;
+    for (const Values::ConstKeyValuePair &key_value: initial) {
+      Key key = key_value.key;
+      Vector6 delta_pose = delta.at(key);
+      Rot3 R = initial.at<Pose3>(key).rotation().retract(delta_pose.head(3));
+      Point3 t_initial = initial.at<Pose3>(key).translation();
+      Point3 t = Point3(delta_pose.tail(3)) + offset;
+      estimate.insert(key, Pose3(R, t));
+    }
+    return estimate;
+  }
+
+  //*****************************************************************************
   pair<vector<NonlinearFactorGraph>, vector<Values> >
   loadSubgraphs(const size_t& num_subgraphs, const string& data_path) {
     vector<NonlinearFactorGraph> sub_graphs;

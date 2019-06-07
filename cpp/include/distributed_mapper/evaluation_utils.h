@@ -110,6 +110,11 @@ namespace distributed_mapper{
     gtsam::Values retractPose3Global(const gtsam::Values& initial, const gtsam::VectorValues& delta);
 
     /**
+   * @brief retractPose3Global adds delta to initial in global frame with offset
+   */
+    gtsam::Values retractPose3GlobalWithOffset(const gtsam::Values& initial, const gtsam::VectorValues& delta, const gtsam::Point3& offset);
+
+    /**
    * @brief buildLinearOrientationGraph generates a linear orientation graph given the nonlinear factor graph and uses the between noise
    */
     gtsam::GaussianFactorGraph buildLinearOrientationGraph(const gtsam::NonlinearFactorGraph& g, const bool& use_between_noise = false);
