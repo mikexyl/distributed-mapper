@@ -65,6 +65,37 @@ class DistributedMapper{
       latest_change_ = DBL_MAX;
     }
 
+    /**
+     * Reinitialize the optimizer.
+     */
+    void reinit() {
+      // Config
+      rotation_noise_model_ = gtsam::noiseModel::Isotropic::Variance(9, 1);
+      pose_noise_model_ = gtsam::noiseModel::Isotropic::Variance(12, 1);
+      graph_ = gtsam::NonlinearFactorGraph();
+      chordal_graph_ = gtsam::NonlinearFactorGraph();
+      rot_subgraph_ = gtsam::GaussianFactorGraph();
+      initial_ = gtsam::Values();
+      neighbors_ = gtsam::Values();
+      separators_symbols_ = std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>>();
+      rotation_error_trace_ = std::vector<double>();
+      pose_error_trace_ = std::vector<double>();
+      rotation_estimate_change_trace_ = std::vector<double>();
+      pose_estimate_change_trace_ = std::vector<double>();
+      centralized_values_ = gtsam::Values();
+      update_type_ = incUpdate;
+      gamma_ = 1.0f;
+      use_between_noise_ = false;
+      use_landmarks_ = false;
+      latest_change_ = DBL_MAX;
+    }
+
+    /**
+     * Reset latest change control attribute
+     */
+    void resetLatestChange() {
+      latest_change_ = DBL_MAX;
+    }
 
     /** Set the flag whether to use landmarks or not */
     void setUseLandmarksFlag(const bool& use_landmarks){
