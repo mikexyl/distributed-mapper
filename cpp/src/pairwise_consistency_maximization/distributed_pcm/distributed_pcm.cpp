@@ -201,6 +201,8 @@ namespace distributed_pcm {
                 // Update robot local map
                 auto separator_factor = boost::dynamic_pointer_cast<gtsam::BetweenFactor<gtsam::Pose3> >(dist_mapper->currentGraph().at(separators_ids[i]));
                 robot_local_map.removeTransform(std::make_pair(separator_factor->keys().at(0), separator_factor->keys().at(1)));
+                dist_mapper->eraseSeparatorsSymbols(std::make_pair(separator_factor->keys().at(0), separator_factor->keys().at(1)));
+                dist_mapper->eraseSeparatorsSymbols(std::make_pair(separator_factor->keys().at(1), separator_factor->keys().at(0)));
             }
         }
         // Remove measurements not in the max clique

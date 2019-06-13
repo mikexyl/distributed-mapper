@@ -208,6 +208,14 @@ class DistributedMapper{
     /** @brief neighbors returns the separators factor symbols  */
     std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>> separatorsSymbols() {return separators_symbols_;}
 
+    /** @brief erase separators factor symbols  */
+    void eraseSeparatorsSymbols(const std::pair<gtsam::Symbol, gtsam::Symbol>& symbols) {
+      auto it = std::find(separators_symbols_.begin(), separators_symbols_.end(), symbols);
+      if (it != separators_symbols_.end()) {
+        separators_symbols_.erase(it);
+      }
+    }
+
     /** @brief allows to remove a factor from the graph.
      *  @param index is the factor index in the graph
      */
