@@ -33,7 +33,7 @@ namespace distributed_pcm {
         return std::make_pair(total_max_clique_sizes, total_outliers_rejected);
     }
 
-    std::pair<int, int> DistributedPCM::solveDecentralized(const int& other_robot_id,
+    std::pair<std::pair<int, int>, std::set<std::pair<gtsam::Key, gtsam::Key>>> DistributedPCM::solveDecentralized(const int& other_robot_id,
                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                 gtsam::GraphAndValues& local_graph_and_values,
                 robot_measurements::RobotLocalMap& robot_local_map,
@@ -167,7 +167,7 @@ namespace distributed_pcm {
         return std::make_pair(max_clique.size(), max_clique_info.second);
     }
 
-    std::pair<int, int> DistributedPCM::executePCMDecentralized(const int& other_robot_id, robot_measurements::RobotLocalMap& robot_local_map,
+    std::pair<std::pair<int, int>, std::set<std::pair<gtsam::Key, gtsam::Key>>> DistributedPCM::executePCMDecentralized(const int& other_robot_id, robot_measurements::RobotLocalMap& robot_local_map,
                                             const robot_measurements::RobotLocalMap& other_robot_local_info,
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                             gtsam::GraphAndValues& local_graph_and_values,
@@ -193,16 +193,18 @@ namespace distributed_pcm {
         // Retrieve indexes of rejected measurements
         auto separators_ids = dist_mapper->separatorEdge();
         std::vector<int> rejected_separator_ids;
+        std::set<std::pair<gtsam::Key, gtsam::Key>> rejected_key_pairs;
         for (int i = 0; i < separators_ids.size(); i++) {
             if (isSeparatorToBeRejected(max_clique, separators_ids[i], roboti_robotj_separators_transforms,
                                         interrobot_measurements.getLoopClosures(), dist_mapper)) {
                 rejected_separator_ids.emplace_back(i);
 
-                // Update robot local map
+                // Update robot local map and store keys
                 auto separator_factor = boost::dynamic_pointer_cast<gtsam::BetweenFactor<gtsam::Pose3> >(dist_mapper->currentGraph().at(separators_ids[i]));
                 robot_local_map.removeTransform(std::make_pair(separator_factor->keys().at(0), separator_factor->keys().at(1)));
                 dist_mapper->eraseSeparatorsSymbols(std::make_pair(separator_factor->keys().at(0), separator_factor->keys().at(1)));
                 dist_mapper->eraseSeparatorsSymbols(std::make_pair(separator_factor->keys().at(1), separator_factor->keys().at(0)));
+                rejected_key_pairs.insert(std::make_pair(separator_factor->keys().at(0), separator_factor->keys().at(1)));
             }
         }
         // Remove measurements not in the max clique
@@ -230,7 +232,7 @@ namespace distributed_pcm {
         }
         dist_mapper->setSeparatorIds(new_separator_ids);
 
-        return std::make_pair(max_clique.size(), max_clique_info.second);
+        return std::make_pair(std::make_pair(max_clique.size(), max_clique_info.second), rejected_key_pairs);
     }
 
     bool DistributedPCM::isSeparatorToBeRejected(const std::vector<int>& max_clique, const int& separtor_id, const graph_utils::Transforms& separators_transforms,
