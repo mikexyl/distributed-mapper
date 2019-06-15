@@ -15,7 +15,13 @@ double PairwiseConsistency::getChiSquaredThreshold(){
                 threshold = 1.635;
                 break;
             case 90:
-                threshold = 2.20;
+                threshold = 2.204;
+                break;
+            case 75:
+                threshold = 3.455;
+                break;
+            case 50:
+                threshold = 5.348;
                 break;
             default:
                 std::cerr << std::endl << "Confidence probability of " << confidence_probability_ << " is not supported" << std::endl;
