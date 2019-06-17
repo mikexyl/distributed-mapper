@@ -318,9 +318,7 @@ class DistributedMapper{
       // Update the value if symbol already exists
       if(neighbors_linearized_poses_.exists(key)){
         neighbors_linearized_poses_.at(key) = vector_value;
-      }
-      else{
-        neighbors_linearized_poses_.insert(key, vector_value);
+        neighbors_updated_[key] = true;
       }
     }
 
@@ -333,9 +331,7 @@ class DistributedMapper{
       // Update the value if symbol already exists
       if(neighbors_linearized_rotations_.exists(key)){
         neighbors_linearized_rotations_.at(key) = vector_value;
-      }
-      else{
-        neighbors_linearized_rotations_.insert(key, vector_value);
+        neighbors_updated_[key] = true;
       }
     }
 
@@ -583,6 +579,7 @@ class DistributedMapper{
     gtsam::VectorValues linearized_rotation_; // contains vector values of rotation of internal nodes
     gtsam::VectorValues new_linearized_rotation_; // contains vector values of rotation of internal nodes after current iteration
     gtsam::VectorValues neighbors_linearized_rotations_; // contains vector values of all the neighboring robots for distributed estimation
+    std::map<gtsam::Key, bool> neighbors_updated_;
     gtsam::VectorValues linearized_poses_; // contains vector values of poses of internal nodes
     gtsam::VectorValues new_linearized_poses_; // contains vector values of poses of internal nodes after current iteration
     gtsam::VectorValues neighbors_linearized_poses_; // contains vector values of all the neighboring robots for distributed estimation

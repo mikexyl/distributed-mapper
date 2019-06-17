@@ -13,6 +13,7 @@ DistributedMapper::createSubgraphInnerAndSepEdges(const NonlinearFactorGraph& su
   NonlinearFactorGraph subgraph_inner_edge;
   vector<size_t> subgraphs_sep_edges_id;
   neighbors_.clear();
+  neighbors_updated_.clear();
   separators_symbols_.clear();
 
   for(size_t k=0; k < subgraph.size(); k++){ // this loops over the factors in subgraphs[i]
@@ -70,11 +71,12 @@ DistributedMapper::createSubgraphInnerAndSepEdges(const NonlinearFactorGraph& su
 
   // Convert neighbor values into row major vector values
   for (auto neighbor_value : evaluation_utils::rowMajorVectorValues(neighbors_)){
-      neighbors_linearized_rotations_.tryInsert(neighbor_value.first, neighbor_value.second);
+    neighbors_linearized_rotations_.tryInsert(neighbor_value.first, neighbor_value.second);
+    neighbors_updated_.insert(std::make_pair(neighbor_value.first, false));
   }
 
   for (auto neighbor_value : evaluation_utils::initializeVectorValues(neighbors_)){
-      neighbors_linearized_poses_.tryInsert(neighbor_value.first, neighbor_value.second);
+    neighbors_linearized_poses_.tryInsert(neighbor_value.first, neighbor_value.second);
   }
 
   return make_pair(subgraph_inner_edge,subgraphs_sep_edges_id);
@@ -152,13 +154,13 @@ DistributedMapper::estimateRotation(){
       }
 
     if(robot0 == robotName_){ // robot i owns the first key
-      if(!use_flagged_init_ || neighboring_robots_initialized_[robot1]){ // if use flagged initialization and robot sharing the edge is already optimized
+      if((!use_flagged_init_ || neighboring_robots_initialized_[robot1]) && neighbors_updated_[key1]) { // if use flagged initialization and robot sharing the edge is already optimized
         Vector r1 = neighbors_linearized_rotations_.at(key1);
         rot_subgraph.add(key0, M9, r1, model);
       }
     }
     else if(robot1 == robotName_){ // robot i owns the second key
-      if(!use_flagged_init_ || neighboring_robots_initialized_[robot0]){ // if use flagged initialization and robot sharing the edge is already optimized
+      if((!use_flagged_init_ || neighboring_robots_initialized_[robot0]) && neighbors_updated_[key0]){ // if use flagged initialization and robot sharing the edge is already optimized
         Vector r0 = neighbors_linearized_rotations_.at(key0);
         Vector M9_r0 = M9*r0;
         rot_subgraph.add(key1, I9, M9_r0, model);
@@ -253,7 +255,7 @@ DistributedMapper::estimatePoses(){
       }
 
     if(robot0 == robotName_){ // robot i owns the first key
-        if(!use_flagged_init_ || neighboring_robots_initialized_[robot1]){ // if use flagged initialization and robot sharing the edge is already optimized
+        if((!use_flagged_init_ || neighboring_robots_initialized_[robot1]) && neighbors_updated_[key1]){ // if use flagged initialization and robot sharing the edge is already optimized
             Vector error = between_chordal_factor.evaluateError(initial_.at<Pose3>(key0), neighbors_.at<Pose3>(key1), M0, M1);
             // Robot i owns the first key_i, on which we put a prior
             Matrix A = M0;
@@ -267,7 +269,7 @@ DistributedMapper::estimatePoses(){
           }
       }
     else if(robot1 == robotName_){ // robot i owns the second key
-        if(!use_flagged_init_ || neighboring_robots_initialized_[robot0]){ // if use flagged initialization and robot sharing the edge is already optimized            
+        if((!use_flagged_init_ || neighboring_robots_initialized_[robot0]) && neighbors_updated_[key0]){ // if use flagged initialization and robot sharing the edge is already optimized            
             Vector error = between_chordal_factor.evaluateError(neighbors_.at<Pose3>(key0), initial_.at<Pose3>(key1), M0, M1);
             // Robot i owns the second key_i, on which we put a prior
             Matrix A = M1;
@@ -278,7 +280,10 @@ DistributedMapper::estimatePoses(){
                 chordal_noise->WhitenSystem(A, b);
               }
             dist_GFG.add(key1, A, b, pose_noise_model_);
-          }
+        }
+        if (!neighbors_updated_[key0]) {
+          int test = 1;
+        }
       }
     else{
         cout << "robot0 != robotNames[i] and robot1 != robotNames[i]: " <<
