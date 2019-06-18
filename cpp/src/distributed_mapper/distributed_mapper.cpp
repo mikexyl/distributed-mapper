@@ -281,9 +281,6 @@ DistributedMapper::estimatePoses(){
               }
             dist_GFG.add(key1, A, b, pose_noise_model_);
         }
-        if (!neighbors_updated_[key0]) {
-          int test = 1;
-        }
       }
     else{
         cout << "robot0 != robotNames[i] and robot1 != robotNames[i]: " <<

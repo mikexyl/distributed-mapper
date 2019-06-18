@@ -101,8 +101,7 @@ void printConsistentLoopClosures(const LoopClosures& loop_closures, const std::v
   std::ofstream output_file;
   output_file.open(file_name);
   for (const auto& loop_closure_id: max_clique_data) {
-    // -1 because fast max-clique finder is one-based.
-    output_file << loop_closures[loop_closure_id-1].first << " " << loop_closures[loop_closure_id-1].second << std::endl;
+    output_file << loop_closures[loop_closure_id].first << " " << loop_closures[loop_closure_id].second << std::endl;
   }
   output_file.close();
 }
