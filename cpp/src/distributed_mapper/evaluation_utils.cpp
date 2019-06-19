@@ -482,6 +482,60 @@ namespace evaluation_utils{
     return make_pair(combined_graph, combined_values);
   }
 
+
+  GraphAndValues readFullGraph(const vector<GraphAndValues>& graph_and_values_vec  // vector of all graphs and initials for each robot
+  ) {
+    //std::cout << "Creating full_graph by combining subgraphs." << std::endl;
+
+    // Combined graph and Values
+    NonlinearFactorGraph::shared_ptr combined_graph(new NonlinearFactorGraph);
+    Values::shared_ptr combined_values(new Values);
+
+    // Iterate over each robot
+    for (size_t robot = 0; robot < graph_and_values_vec.size(); robot++) {
+
+      // Load graph and initial
+      NonlinearFactorGraph graph = *(graph_and_values_vec[robot].first);
+      Values initial = *(graph_and_values_vec[robot].second);
+
+      // Iterate over initial and push it to the combined_values, each initial value is present only once
+      for (const Values::ConstKeyValuePair &key_value: initial) {
+        Key key = key_value.key;
+        if (!combined_values->exists(key))
+          combined_values->insert(key, initial.at<Pose3>(key));
+      }
+
+      // Iterate over the graph and push the factor if it is not already present in combined_graph
+      for (size_t ksub = 0; ksub < graph.size(); ksub++) { //for each factor in the new subgraph
+        bool is_present = false;
+        for (size_t k = 0; k < combined_graph->size(); k++) {
+
+          boost::shared_ptr<BetweenFactor<Pose3>> factor_sub =
+              boost::dynamic_pointer_cast<BetweenFactor<Pose3> >(graph.at(ksub));
+          Key factor_sub_key1 = factor_sub->key1();
+          Key factor_sub_key2 = factor_sub->key2();
+
+          boost::shared_ptr<BetweenFactor<Pose3>> factor_combined =
+              boost::dynamic_pointer_cast<BetweenFactor<Pose3> >(combined_graph->at(k));
+          Key factor_combined_key1 = factor_combined->key1();
+          Key factor_combined_key2 = factor_combined->key2();
+
+          // values don't match exactly that's why check with keys as well
+          if (factor_combined->equals(*factor_sub) ||
+              ((factor_sub_key1 == factor_combined_key1) && (factor_sub_key2 == factor_combined_key2))) {
+            is_present = true;
+            break;
+          }
+        }
+        if (is_present == false) // we insert the factor
+          combined_graph->add(graph.at(ksub));
+      }
+    }
+
+    // Return graph and values
+    return make_pair(combined_graph, combined_values);
+  }
+
   std::tuple<double, double, double> evaluateEstimates(const size_t &nr_robots,
                                               const gtsam::GraphAndValues &full_graph_and_values,
                                               const gtsam::noiseModel::Diagonal::shared_ptr &prior_model,

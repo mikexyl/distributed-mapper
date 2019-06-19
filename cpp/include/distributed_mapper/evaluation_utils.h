@@ -206,6 +206,13 @@ namespace distributed_mapper{
     );
 
     /**
+     * @brief readFullGraph reads the full graph if it is present in the directory, otherwise creates it, reads in the order of the vector.
+     * @param graph_and_values_vec contains the graphs and initials of each robot
+     */
+    gtsam::GraphAndValues readFullGraph(const std::vector <gtsam::GraphAndValues>& graph_and_values_vec  // vector of all graphs and initials for each robot
+    );
+
+    /**
      * @brief copyInitial copies the initial graph to optimized graph as a fall back option
      * @param nr_robots is the number of robots
      * @param data_dir is the directory containing the initial graph
