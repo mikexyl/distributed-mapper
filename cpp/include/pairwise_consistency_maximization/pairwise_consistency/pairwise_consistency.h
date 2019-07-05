@@ -7,8 +7,6 @@
 
 #include <eigen3/Eigen/Geometry>
 
-# define PI 3.141592653589793238462643383279502884L
-
 /** \namespace pairwise_consistency
  *  \brief This namespace encapsulates the tools for the pairwise consistency computation.
  */
