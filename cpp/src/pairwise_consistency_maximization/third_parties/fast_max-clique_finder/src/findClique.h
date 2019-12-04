@@ -26,6 +26,8 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <numeric>
+#include <algorithm>
 using namespace std;
 
 #ifdef _DEBUG
@@ -45,6 +47,7 @@ int maxClique( CGraphIO& gio, int l_bound, vector<int>& max_clique_data );
 void maxCliqueHelper( CGraphIO& gio, vector<int>* U, int sizeOfClique, int& maxClq, vector<int>& max_clique_data_inter );
 
 int maxCliqueHeu( CGraphIO& gio );
+int maxCliqueHeu(CGraphIO& gio, vector<int>& max_clique_data);
 void maxCliqueHelperHeu( CGraphIO& gio, vector<int>* U, int sizeOfClique, int& maxClq, vector<int>& max_clique_data_inter );
 
 }

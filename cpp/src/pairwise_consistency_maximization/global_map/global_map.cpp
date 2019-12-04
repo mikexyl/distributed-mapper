@@ -39,7 +39,8 @@ std::pair<std::vector<int>, int> GlobalMap::pairwiseConsistencyMaximization() {
     gio.readGraph(consistency_matrix_file);
     int max_clique_size = 0;
     std::vector<int> max_clique_data;
-    max_clique_size = FMC::maxClique(gio, max_clique_size, max_clique_data);
+    //max_clique_size = FMC::maxClique(gio, max_clique_size, max_clique_data);
+    max_clique_size = FMC::maxCliqueHeu(gio, max_clique_data);
 
     // Print results
     std::string consistency_loop_closures_file = CONSISTENCY_LOOP_CLOSURES_FILE_NAME + "_" + robot_id + ".txt";
