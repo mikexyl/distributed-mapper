@@ -15,7 +15,8 @@ std::tuple<double, double, int> runDistributedMapper(const size_t& nr_robots, co
                                                      const size_t& max_iter, const double& rotation_estimate_change_threshold, const double& pose_estimate_change_threshold,
                                                      const double& gamma, const bool& use_flagged_init, const distributed_mapper::DistributedMapper::UpdateType& update_type,
                                                      const bool& use_between_noise,  const bool& use_chr_less_full_graph, const bool& use_landmarks, const double& pcm_threshold, const bool& use_covariance,
-                                                     const bool& use_PCM) {
+                                                     const bool& use_PCM,
+                                                     const bool& use_heuristics) {
 
   vector <GraphAndValues> graph_and_values_vec; // vector of all graphs and initials
 
@@ -114,7 +115,7 @@ std::tuple<double, double, int> runDistributedMapper(const size_t& nr_robots, co
                                                        gamma, rotation_estimate_change_threshold,
                                                        pose_estimate_change_threshold,
                                                        use_flagged_init, use_landmarks, debug, true,
-                                                       pcm_threshold, use_covariance, use_PCM,
+                                                       pcm_threshold, use_covariance, use_PCM, use_heuristics,
                                                        graph_and_values_vec,
                                                        rotation_trace, pose_trace, subgraph_rotation_trace,
                                                        subgraph_pose_trace, rotation_vector_values_trace);

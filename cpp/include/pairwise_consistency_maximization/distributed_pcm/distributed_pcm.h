@@ -30,7 +30,8 @@ namespace distributed_pcm {
          */
         static std::pair<int, int> solveCentralized(std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                 std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
-                const double& pcm_threshold, const bool& use_covariance);
+                const double& pcm_threshold, const bool& use_covariance, 
+                const bool& use_heuristics);
 
         /**
          * \brief Function that solves the pairwise consistency maximization according to the current constraints with limited information
@@ -46,7 +47,8 @@ namespace distributed_pcm {
                                 robot_measurements::RobotLocalMap& robot_local_map,
                                 const graph_utils::Trajectory& other_robot_trajectory,
                                 const double& pcm_threshold,
-                                const bool& is_prior_added);
+                                const bool& is_prior_added, 
+                                const bool& use_heuristics);
 
         private:
 
@@ -61,7 +63,8 @@ namespace distributed_pcm {
                                         const std::map<std::pair<char, char>,graph_utils::Transforms>& separators_transforms_by_pair,
                                         std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                                         std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
-                                        const double& pcm_threshold);
+                                        const double& pcm_threshold,
+                                        const bool& use_heuristics);
 
         static std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::Key, gtsam::Key>>, std::set<std::pair<gtsam::Key, gtsam::Key>>>>
                                         executePCMDecentralized(const int& other_robot_id, robot_measurements::RobotLocalMap& robot_local_map,
@@ -69,7 +72,8 @@ namespace distributed_pcm {
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                             gtsam::GraphAndValues& local_graph_and_values,
                                             const double& pcm_threshold,
-                                            const bool& is_prior_added);
+                                            const bool& is_prior_added,
+                                            const bool& use_heuristics);
 
         static bool isSeparatorToBeRejected(const std::vector<int>& max_clique, const int& separtor_id, const graph_utils::Transforms& separators_transforms,
                                                      const graph_utils::LoopClosures& loop_closures, boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper);

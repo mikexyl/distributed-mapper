@@ -42,7 +42,8 @@ namespace global_map {
         GlobalMap(const robot_measurements::RobotLocalMap& robot1_local_map,
                   const robot_measurements::RobotLocalMap& robot2_local_map,
                   const robot_measurements::RobotMeasurements& interrobot_measurements,
-                  const double& pcm_threshold);
+                  const double& pcm_threshold,
+                  const bool& use_heuristics);
 
         /**
          * \brief Function that solves the global maps according to the current constraints
@@ -53,6 +54,8 @@ namespace global_map {
 
       private:
         pairwise_consistency::PairwiseConsistency pairwise_consistency_; ///< Pairwise consistency solver.
+
+        bool use_heuristics_; ///< if true: uses the heuristics-based max-clique solver (faster), if false: uses the exact algorithm (slower) 
 
     }; 
 }

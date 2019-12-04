@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
     double pcm_threshold = 0.99; // confidence probability for the pairwise consistency computation.
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = false; // Use pairwise consistency maximization.
+    bool use_heuristics = true; // Use heuristics-based algorithm for the max-clique solver.
 
     try {
         // Parse program options
@@ -61,7 +62,8 @@ int main(int argc, char *argv[]) {
                 ("confidence, c", po::value<double>(&pcm_threshold), "confidence probability for the pairwise consistency computation (default: 0.99)")
                 ("useCovariance, i", po::value<bool>(&use_covariance), "use covariance in dataset file (default: false)")
                 ("debug, d", po::value<bool>(&debug), "debug (default: false)")
-                ("usePCM", po::value<bool>(&use_PCM), "use pairwise consistency maximization (default: true)");
+                ("usePCM", po::value<bool>(&use_PCM), "use pairwise consistency maximization (default: true)")
+                ("useHeuristics", po::value<bool>(&use_heuristics), "use heuristics-based algorithm for the max-clique solver. (default: true)");
 
         po::variables_map vm;
         try {
@@ -89,7 +91,7 @@ int main(int argc, char *argv[]) {
             use_XY, use_OP, debug, priorModel, model,
             max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
             gamma, use_flagged_init, update_type, use_between_noise,
-            use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+            use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, use_heuristics);
 
     return 0;
 }

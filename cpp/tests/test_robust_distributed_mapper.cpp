@@ -47,7 +47,7 @@ TEST(DistributedMapper, test_distributed_estimation_without_outliers_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(0.0, std::get<0>(results), tolerance));
@@ -83,7 +83,7 @@ TEST(DistributedMapper, test_distributed_estimation_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 2e-1;
     EXPECT(assert_equal(0.0, std::get<0>(results), tolerance));
@@ -121,7 +121,7 @@ TEST(DistributedMapper, test_distributed_estimation_not_in_order_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 2e-1;
     EXPECT(assert_equal(0.0, std::get<0>(results), tolerance));
@@ -157,7 +157,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_PCM_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(27.8, std::get<0>(results), tolerance));
@@ -193,7 +193,7 @@ TEST(DistributedMapper, test_distributed_estimation_4robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(0.0, std::get<0>(results), tolerance));
@@ -230,7 +230,7 @@ TEST(DistributedMapper, test_distributed_estimation_8robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance));
@@ -267,7 +267,7 @@ TEST(DistributedMapper, test_distributed_estimation_16robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 2e0;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance));
@@ -303,7 +303,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance));
@@ -337,7 +337,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_4robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 5e-1;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance*std::get<0>(results)));
@@ -372,7 +372,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_10robots) 
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 10; // That's the best I can get right now with that many poses.
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance*std::get<0>(results)));
@@ -406,7 +406,7 @@ TEST(DistributedMapper, test_distributed_estimation_argos_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 10; // That's the best I can get right now with that many poses.
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance*std::get<0>(results)));
@@ -441,7 +441,7 @@ TEST(DistributedMapper, test_distributed_estimation_argos_4robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM, false);
     // Compare centralized and distributed pose estimates
     double tolerance = 10; // That's the best I can get right now with that many poses.
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance*std::get<0>(results)));

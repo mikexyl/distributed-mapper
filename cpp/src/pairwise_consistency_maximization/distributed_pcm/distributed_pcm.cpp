@@ -6,7 +6,7 @@ namespace distributed_pcm {
 
     std::pair<int, int> DistributedPCM::solveCentralized(std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
             std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
-            const double& pcm_threshold, const bool& use_covariance) {
+            const double& pcm_threshold, const bool& use_covariance, const bool& use_heuristics) {
 
         std::vector<graph_utils::LoopClosures> separators_by_robot;
         std::vector<graph_utils::Transforms> transforms_by_robot;
@@ -23,7 +23,7 @@ namespace distributed_pcm {
 
                 auto max_clique_info = executePCMCentralized(roboti, robotj, transforms_by_robot, separators_by_robot,
                 separators_transforms_by_pair, dist_mappers,
-                graph_and_values_vector, pcm_threshold);
+                graph_and_values_vector, pcm_threshold, use_heuristics);
 
                 total_max_clique_sizes += max_clique_info.first;
                 total_outliers_rejected += max_clique_info.second;
@@ -40,7 +40,8 @@ namespace distributed_pcm {
                 robot_measurements::RobotLocalMap& robot_local_map,
                 const graph_utils::Trajectory& other_robot_trajectory,
                 const double& pcm_threshold,
-                const bool& is_prior_added) {
+                const bool& is_prior_added, 
+                const bool& use_heuristics) {
 
         graph_utils::Transforms empty_transforms;
         auto other_robot_local_info = robot_measurements::RobotLocalMap(other_robot_trajectory, empty_transforms, robot_local_map.getLoopClosures());
@@ -48,7 +49,7 @@ namespace distributed_pcm {
         // Apply PCM for each pair of robots
         auto max_clique_info = executePCMDecentralized(other_robot_id, robot_local_map, other_robot_local_info,
                                             dist_mapper, local_graph_and_values,
-                                            pcm_threshold, is_prior_added);
+                                            pcm_threshold, is_prior_added, use_heuristics);
 
         return max_clique_info;
     }
@@ -119,13 +120,14 @@ namespace distributed_pcm {
                 const std::map<std::pair<char, char>,graph_utils::Transforms>& separators_transforms_by_pair,
                 std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                 std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
-                const double& pcm_threshold){
+                const double& pcm_threshold,
+                const bool& use_heuristics){
         auto roboti_local_map = robot_measurements::RobotLocalMap(transforms_by_robot[roboti], separators_by_robot[roboti]);
         auto robotj_local_map = robot_measurements::RobotLocalMap(transforms_by_robot[robotj], separators_by_robot[robotj]);
         auto roboti_robotj_separators_transforms = separators_transforms_by_pair.at(std::make_pair(dist_mappers[roboti]->robotName(),dist_mappers[robotj]->robotName()));
         auto interrobot_measurements = robot_measurements::InterRobotMeasurements(roboti_robotj_separators_transforms, dist_mappers[roboti]->robotName(), dist_mappers[robotj]->robotName());
 
-        auto global_map = global_map::GlobalMap(roboti_local_map, robotj_local_map, interrobot_measurements, pcm_threshold);
+        auto global_map = global_map::GlobalMap(roboti_local_map, robotj_local_map, interrobot_measurements, pcm_threshold, use_heuristics);
         auto max_clique_info = global_map.pairwiseConsistencyMaximization();
         std::vector<int> max_clique = max_clique_info.first;
 
@@ -174,7 +176,8 @@ namespace distributed_pcm {
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                             gtsam::GraphAndValues& local_graph_and_values,
                                             const double& pcm_threshold,
-                                            const bool& is_prior_added){
+                                            const bool& is_prior_added,
+                                            const bool& use_heuristics){
 
         graph_utils::Transforms roboti_robotj_separators_transforms;
         for (const auto& transform : robot_local_map.getTransforms().transforms) {
@@ -188,7 +191,7 @@ namespace distributed_pcm {
         auto interrobot_measurements = robot_measurements::InterRobotMeasurements(roboti_robotj_separators_transforms, 
                                                                                 dist_mapper->robotName(), ((char) other_robot_id + 97));
 
-        auto global_map = global_map::GlobalMap(robot_local_map, other_robot_local_info, interrobot_measurements, pcm_threshold);
+        auto global_map = global_map::GlobalMap(robot_local_map, other_robot_local_info, interrobot_measurements, pcm_threshold, use_heuristics);
         auto max_clique_info = global_map.pairwiseConsistencyMaximization();
         std::vector<int> max_clique = max_clique_info.first;
 

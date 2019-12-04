@@ -106,6 +106,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
                      const double& pcm_threshold = 0.99,
                      const bool& use_covariance = false,
                      const bool& use_pcm = true,
+                     const bool& use_heuristics = true,
                      boost::optional<std::vector<gtsam::GraphAndValues>&> graph_and_values_vec = boost::none,
                      boost::optional<std::vector<gtsam::Values>&> rotation_trace = boost::none,
                      boost::optional<std::vector<gtsam::Values>&> pose_trace  = boost::none,

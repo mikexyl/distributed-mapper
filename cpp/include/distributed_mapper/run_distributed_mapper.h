@@ -27,5 +27,5 @@ namespace distributed_mapper {
                              const size_t& max_iter, const double& rotation_estimate_change_threshold, const double& pose_estimate_change_threshold,
                              const double& gamma, const bool& use_flagged_init, const distributed_mapper::DistributedMapper::UpdateType& update_type,
                              const bool& use_between_noise,  const bool& use_chr_less_full_graph, const bool& use_landmarks, const double& pcm_threshold, const bool& use_covariance,
-                             const bool& use_PCM);
+                             const bool& use_PCM, const bool& use_heuristics);
 }
