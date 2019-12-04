@@ -42,7 +42,7 @@ namespace global_map {
         GlobalMap(const robot_measurements::RobotLocalMap& robot1_local_map,
                   const robot_measurements::RobotLocalMap& robot2_local_map,
                   const robot_measurements::RobotMeasurements& interrobot_measurements,
-                  const double& confidence_probability);
+                  const double& pcm_threshold);
 
         /**
          * \brief Function that solves the global maps according to the current constraints

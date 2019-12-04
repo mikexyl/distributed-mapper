@@ -38,7 +38,7 @@ TEST(DistributedMapper, test_distributed_estimation_without_outliers_2robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.90; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.90; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = true; // Use pairwise consistency maximization.
 
@@ -47,7 +47,7 @@ TEST(DistributedMapper, test_distributed_estimation_without_outliers_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(0.0, std::get<0>(results), tolerance));
@@ -75,7 +75,7 @@ TEST(DistributedMapper, test_distributed_estimation_2robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.90; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.90; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = true; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -83,7 +83,7 @@ TEST(DistributedMapper, test_distributed_estimation_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 2e-1;
     EXPECT(assert_equal(0.0, std::get<0>(results), tolerance));
@@ -113,7 +113,7 @@ TEST(DistributedMapper, test_distributed_estimation_not_in_order_2robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.90; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.90; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = true; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -121,7 +121,7 @@ TEST(DistributedMapper, test_distributed_estimation_not_in_order_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 2e-1;
     EXPECT(assert_equal(0.0, std::get<0>(results), tolerance));
@@ -149,7 +149,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_PCM_2robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.90; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.90; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = false; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -157,7 +157,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_PCM_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(27.8, std::get<0>(results), tolerance));
@@ -185,7 +185,7 @@ TEST(DistributedMapper, test_distributed_estimation_4robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.90; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.90; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = true; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -193,7 +193,7 @@ TEST(DistributedMapper, test_distributed_estimation_4robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(0.0, std::get<0>(results), tolerance));
@@ -222,7 +222,7 @@ TEST(DistributedMapper, test_distributed_estimation_8robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.90; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.90; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = true; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -230,7 +230,7 @@ TEST(DistributedMapper, test_distributed_estimation_8robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance));
@@ -259,7 +259,7 @@ TEST(DistributedMapper, test_distributed_estimation_16robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.90; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.90; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = true; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -267,7 +267,7 @@ TEST(DistributedMapper, test_distributed_estimation_16robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 2e0;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance));
@@ -295,7 +295,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_2robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.99; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.99; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = false; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -303,7 +303,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance));
@@ -329,7 +329,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_4robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.99; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.99; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = false; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -337,7 +337,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_4robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 5e-1;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance*std::get<0>(results)));
@@ -364,7 +364,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_10robots) 
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.99; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.99; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = false; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -372,7 +372,7 @@ TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_10robots) 
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 10; // That's the best I can get right now with that many poses.
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance*std::get<0>(results)));
@@ -398,7 +398,7 @@ TEST(DistributedMapper, test_distributed_estimation_argos_2robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.99; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.99; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = true; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -406,7 +406,7 @@ TEST(DistributedMapper, test_distributed_estimation_argos_2robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 10; // That's the best I can get right now with that many poses.
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance*std::get<0>(results)));
@@ -433,7 +433,7 @@ TEST(DistributedMapper, test_distributed_estimation_argos_4robots) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.99; // Confidence probability for the pairwise consistency computation
+    double pcm_threshold = 0.99; // Confidence probability for the pairwise consistency computation
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = true; // Use pairwise consistency maximization.
     // Call distributed optimization
@@ -441,7 +441,7 @@ TEST(DistributedMapper, test_distributed_estimation_argos_4robots) {
                                                                    use_XY, use_OP, debug, prior_model, model,
                                                                    max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
                                                                    gamma, use_flagged_init, update_type, use_between_noise,
-                                                                   use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+                                                                   use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
     // Compare centralized and distributed pose estimates
     double tolerance = 10; // That's the best I can get right now with that many poses.
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance*std::get<0>(results)));

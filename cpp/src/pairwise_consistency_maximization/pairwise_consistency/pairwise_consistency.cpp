@@ -7,24 +7,27 @@ namespace pairwise_consistency {
 double PairwiseConsistency::getChiSquaredThreshold(){
     double threshold;
     if (nb_degree_freedom_ == 6) {
-        switch ((int)std::round(confidence_probability_*100)){
-            case 99:
+        switch ((int)std::round(pcm_threshold_*100)){
+            case 1:
                 threshold = 0.872;
                 break;
-            case 95:
+            case 5:
                 threshold = 1.635;
                 break;
-            case 90:
+            case 10:
                 threshold = 2.204;
                 break;
-            case 75:
+            case 25:
                 threshold = 3.455;
                 break;
             case 50:
                 threshold = 5.348;
                 break;
+            case 75:
+                threshold = 7.840;
+                break;
             default:
-                std::cerr << std::endl << "Confidence probability of " << confidence_probability_ << " is not supported" << std::endl;
+                std::cerr << std::endl << "Confidence probability of " << pcm_threshold_ << " is not supported" << std::endl;
                 std::abort();
         }
     } else {

@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     bool use_between_noise = false; // use between factor noise or not
     bool use_chr_less_full_graph = false; // whether full graph has character indexes or not
     bool use_landmarks = false; // use landmarks -- landmarks are given symbols as upper case of robot name, for eg: if robot is 'a', landmark will be 'A'
-    double confidence_probability = 0.99; // confidence probability for the pairwise consistency computation.
+    double pcm_threshold = 0.99; // confidence probability for the pairwise consistency computation.
     bool use_covariance = false; // use covariance in dataset file.
     bool use_PCM = false; // Use pairwise consistency maximization.
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
                 ("pthresh, p", po::value<double>(&pose_estimate_change_threshold),
                  "Specify difference between pose estimate provides an early stopping condition (default: 1e-2)")
                 ("maxIter, m", po::value<size_t>(&max_iter), "maximum number of iterations (default: 100000)")
-                ("confidence, c", po::value<double>(&confidence_probability), "confidence probability for the pairwise consistency computation (default: 0.99)")
+                ("confidence, c", po::value<double>(&pcm_threshold), "confidence probability for the pairwise consistency computation (default: 0.99)")
                 ("useCovariance, i", po::value<bool>(&use_covariance), "use covariance in dataset file (default: false)")
                 ("debug, d", po::value<bool>(&debug), "debug (default: false)")
                 ("usePCM", po::value<bool>(&use_PCM), "use pairwise consistency maximization (default: true)");
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
             use_XY, use_OP, debug, priorModel, model,
             max_iter, rotation_estimate_change_threshold, pose_estimate_change_threshold,
             gamma, use_flagged_init, update_type, use_between_noise,
-            use_chr_less_full_graph, use_landmarks, confidence_probability, use_covariance, use_PCM);
+            use_chr_less_full_graph, use_landmarks, pcm_threshold, use_covariance, use_PCM);
 
     return 0;
 }

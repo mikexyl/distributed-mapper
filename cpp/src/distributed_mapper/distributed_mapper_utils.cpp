@@ -491,7 +491,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
                      const bool& use_landmarks,
                      const bool& debug,
                      const bool& contains_odometry,
-                     const double& confidence_probability,
+                     const double& pcm_threshold,
                      const bool& use_covariance,
                      const bool& use_pcm,
                      boost::optional<std::vector<gtsam::GraphAndValues>&> graph_and_values_vec,
@@ -516,7 +516,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
 
   if (use_pcm && contains_odometry) {
     auto max_clique_info = distributed_pcm::DistributedPCM::solveCentralized(dist_mappers, graph_and_values_vec.get(),
-                                                             confidence_probability, use_covariance);
+                                                             pcm_threshold, use_covariance);
     max_clique_size = max_clique_info.first;
   }
 

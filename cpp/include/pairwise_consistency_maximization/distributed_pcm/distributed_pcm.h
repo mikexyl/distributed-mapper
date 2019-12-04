@@ -30,7 +30,7 @@ namespace distributed_pcm {
          */
         static std::pair<int, int> solveCentralized(std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                 std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
-                const double& confidence_probability, const bool& use_covariance);
+                const double& pcm_threshold, const bool& use_covariance);
 
         /**
          * \brief Function that solves the pairwise consistency maximization according to the current constraints with limited information
@@ -45,7 +45,7 @@ namespace distributed_pcm {
                                 gtsam::GraphAndValues& local_graph_and_values,
                                 robot_measurements::RobotLocalMap& robot_local_map,
                                 const graph_utils::Trajectory& other_robot_trajectory,
-                                const double& confidence_probability,
+                                const double& pcm_threshold,
                                 const bool& is_prior_added);
 
         private:
@@ -61,14 +61,14 @@ namespace distributed_pcm {
                                         const std::map<std::pair<char, char>,graph_utils::Transforms>& separators_transforms_by_pair,
                                         std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                                         std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
-                                        const double& confidence_probability);
+                                        const double& pcm_threshold);
 
         static std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::Key, gtsam::Key>>, std::set<std::pair<gtsam::Key, gtsam::Key>>>>
                                         executePCMDecentralized(const int& other_robot_id, robot_measurements::RobotLocalMap& robot_local_map,
                                             const robot_measurements::RobotLocalMap& other_robot_local_info,
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                             gtsam::GraphAndValues& local_graph_and_values,
-                                            const double& confidence_probability,
+                                            const double& pcm_threshold,
                                             const bool& is_prior_added);
 
         static bool isSeparatorToBeRejected(const std::vector<int>& max_clique, const int& separtor_id, const graph_utils::Transforms& separators_transforms,

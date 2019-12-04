@@ -103,7 +103,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
                      const bool& use_landmarks = false,
                      const bool& debug = false,
                      const bool& contains_odometry = true,
-                     const double& confidence_probability = 0.99,
+                     const double& pcm_threshold = 0.99,
                      const bool& use_covariance = false,
                      const bool& use_pcm = true,
                      boost::optional<std::vector<gtsam::GraphAndValues>&> graph_and_values_vec = boost::none,

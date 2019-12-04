@@ -20,11 +20,11 @@ const std::string GlobalMap::CONSISTENCY_LOOP_CLOSURES_FILE_NAME = std::string(G
 GlobalMap::GlobalMap(const robot_measurements::RobotLocalMap& robot1_local_map,
                 const robot_measurements::RobotLocalMap& robot2_local_map,
                 const robot_measurements::RobotMeasurements& interrobot_measurements,
-                const double& confidence_probability):
+                const double& pcm_threshold):
                 pairwise_consistency_(robot1_local_map.getTransforms(), robot2_local_map.getTransforms(), 
                             interrobot_measurements.getTransforms(), interrobot_measurements.getLoopClosures(),
                             robot1_local_map.getTrajectory(), robot2_local_map.getTrajectory(),
-                            robot1_local_map.getNbDegreeFreedom(), confidence_probability){}
+                            robot1_local_map.getNbDegreeFreedom(), pcm_threshold){}
 
 
 std::pair<std::vector<int>, int> GlobalMap::pairwiseConsistencyMaximization() {

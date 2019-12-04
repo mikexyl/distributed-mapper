@@ -35,11 +35,11 @@ namespace pairwise_consistency {
                             const graph_utils::Trajectory& trajectory_robot1,
                             const graph_utils::Trajectory& trajectory_robot2,
                             const uint8_t& nb_degree_freedom,
-                            const double& confidence_probability):
+                            const double& pcm_threshold):
                             loop_closures_(loop_closures), transforms_robot1_(transforms_robot1), 
                             transforms_robot2_(transforms_robot2), transforms_interrobot_(transforms_interrobot),
                             trajectory_robot1_(trajectory_robot1), trajectory_robot2_(trajectory_robot2),
-                            nb_degree_freedom_(nb_degree_freedom), confidence_probability_(confidence_probability){};
+                            nb_degree_freedom_(nb_degree_freedom), pcm_threshold_(pcm_threshold){};
 
         /**
          * \brief Computation of the consistency matrix
@@ -130,7 +130,7 @@ namespace pairwise_consistency {
 
         uint8_t nb_degree_freedom_;///< Number of degree of freedom of the measurements.
 
-        double confidence_probability_;///< Probability of a larger value of X^2.
+        double pcm_threshold_;///< Probability of a larger value of X^2.
     };          
 
 }
