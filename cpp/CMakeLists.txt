@@ -11,10 +11,6 @@ include_directories(${GTSAM_INCLUDE_DIR})
 link_directories(${GTSAM_LIBRARY_DIRS})
 message("GTSAM Libraries: ${GTSAM_LIBRARIES}")
 
-# for unittest examples
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${GTSAM_DIR}/../GTSAMCMakeTools")
-include(GtsamTesting)
-
 ###########################################################################
 # Find Boost
 find_package(Boost COMPONENTS serialization filesystem system program_options thread REQUIRED)
@@ -107,10 +103,6 @@ target_link_libraries(distributed_mapper
 add_executable (robust_distributed_optimization_example_2robots examples/robust_distributed_optimization_example_2robots.cpp)
 target_link_libraries (robust_distributed_optimization_example_2robots
         distributed_mapper)
-
-###########################################################################
-# Tests
-add_subdirectory(tests)
 
 ###########################################################################
 # Install
