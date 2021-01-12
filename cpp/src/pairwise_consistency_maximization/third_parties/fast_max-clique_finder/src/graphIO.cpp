@@ -232,7 +232,7 @@ string CGraphIO::getFileExtension(string fileName)
 	  if(result != string::npos)
 	  {
 	//found the path (file prefix)
-	//get the path, including the last DIR_SEPARATOR
+	//get the path, including the last DIR_loopclosure
 	path = fileName.substr(0,result+1);
 	//remove the path from the fileName
 	fileName = fileName.substr(result+1);

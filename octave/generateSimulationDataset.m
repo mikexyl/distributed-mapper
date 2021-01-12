@@ -17,10 +17,10 @@ id_offset = 96; % letter a = 97 (ASCII)
 sigma_R = 0.01;
 sigma_t = 0.1;
 trajectory_size = 20;
-number_of_separators = 10;
+number_of_loopclosures = 10;
 use_rotation = true;
 add_outliers = true;
-number_of_outlying_separators = number_of_separators;
+number_of_outlying_loopclosures = number_of_loopclosures;
 
 %% Setup
 addpath(genpath('./posegraph_utils'));
@@ -54,17 +54,17 @@ for robot=1:number_of_robots
     robot_poses{end+1} = poses;
 end
 
-%% Add separators.
+%% Add loopclosures.
 pairs_of_robots = combnk(1:number_of_robots, 2);
 for pair = 1:size(pairs_of_robots, 1)
     robot1 = pairs_of_robots(pair, 1);
     robot2 = pairs_of_robots(pair, 2);
-    [measurements, edges_id] = generateSeparators(robot_poses, robot1, robot2, robots_offsets{robot1}, robots_offsets{robot2}, number_of_separators, trajectory_size, sigma_R, sigma_t, information_matrix);
+    [measurements, edges_id] = generateloopclosures(robot_poses, robot1, robot2, robots_offsets{robot1}, robots_offsets{robot2}, number_of_loopclosures, trajectory_size, sigma_R, sigma_t, information_matrix);
     writeG2oDataset3D(file_names{robot1}, measurements, edges_id, [], 0, 1);
     writeG2oDataset3D(file_names{robot2}, measurements, edges_id, [], 0, 1);
     
     %% Add outliers.
-    [measurements, edges_id] = generateOutliers(robot_poses, robot1, robot2, robots_offsets{robot1}, robots_offsets{robot2}, number_of_outlying_separators, trajectory_size, information_matrix, use_rotation, sigma_R, sigma_t);
+    [measurements, edges_id] = generateOutliers(robot_poses, robot1, robot2, robots_offsets{robot1}, robots_offsets{robot2}, number_of_outlying_loopclosures, trajectory_size, information_matrix, use_rotation, sigma_R, sigma_t);
     writeG2oDataset3D(file_names{robot1}, measurements, edges_id, [], 0, 1);
     writeG2oDataset3D(file_names{robot2}, measurements, edges_id, [], 0, 1);
 end

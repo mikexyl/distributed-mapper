@@ -52,15 +52,15 @@ namespace distributed_pcm {
 
         private:
 
-        static void fillInRequiredInformationCentralized(std::vector<graph_utils::LoopClosures>& separators_by_robot,
+        static void fillInRequiredInformationCentralized(std::vector<graph_utils::LoopClosures>& loopclosures_by_robot,
                                        std::vector<graph_utils::Transforms>& transforms_by_robot,
-                                       std::map<std::pair<char, char>,graph_utils::Transforms>& separators_transforms_by_pair,
+                                       std::map<std::pair<char, char>,graph_utils::Transforms>& loopclosures_transforms_by_pair,
                                        const std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                                        const bool& use_covariance);
 
         static std::pair<int, int> executePCMCentralized(const int& roboti, const int& robotj, const std::vector<graph_utils::Transforms>& transforms_by_robot,
-                                        const std::vector<graph_utils::LoopClosures>& separators_by_robot,
-                                        const std::map<std::pair<char, char>,graph_utils::Transforms>& separators_transforms_by_pair,
+                                        const std::vector<graph_utils::LoopClosures>& loopclosures_by_robot,
+                                        const std::map<std::pair<char, char>,graph_utils::Transforms>& loopclosures_transforms_by_pair,
                                         std::vector< boost::shared_ptr<distributed_mapper::DistributedMapper> >& dist_mappers,
                                         std::vector<gtsam::GraphAndValues>& graph_and_values_vector,
                                         const double& pcm_threshold,
@@ -75,7 +75,7 @@ namespace distributed_pcm {
                                             const bool& is_prior_added,
                                             const bool& use_heuristics);
 
-        static bool isSeparatorToBeRejected(const std::vector<int>& max_clique, const int& separtor_id, const graph_utils::Transforms& separators_transforms,
+        static bool isloopclosureToBeRejected(const std::vector<int>& max_clique, const int& separtor_id, const graph_utils::Transforms& loopclosures_transforms,
                                                      const graph_utils::LoopClosures& loop_closures, boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper);
 
     };

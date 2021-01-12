@@ -14,13 +14,13 @@ DistributedMapper::createSubgraphInnerAndSepEdges(const NonlinearFactorGraph& su
   vector<size_t> subgraphs_sep_edges_id;
   neighbors_.clear();
   neighbors_updated_.clear();
-  separators_symbols_.clear();
+  loopclosures_symbols_.clear();
 
   for(size_t k=0; k < subgraph.size(); k++){ // this loops over the factors in subgraphs[i]
     // Continue if factor does not exist
     if(!subgraph.at(k))continue;
     // Separate in subgraphs[i] edges that are in the interior
-    // from separator edges, which connect vertices in different subgraphs
+    // from loopclosure edges, which connect vertices in different subgraphs
     KeyVector keys = subgraph.at(k)->keys();
 
     if (keys.size() != 2){
@@ -40,7 +40,7 @@ DistributedMapper::createSubgraphInnerAndSepEdges(const NonlinearFactorGraph& su
 
     if (robot0 == robot1 || (use_landmarks_ && robot1 == toupper(robot0))){ // keys from the same subgraph
       if(verbosity_ >= DEBUG) cout << "Factor connecting (intra): " << robot0 << " " << symbolIndex(key0) << " " <<  robot1 << " " << symbolIndex(key1) << endl;
-      subgraph_inner_edge.push_back(subgraph.at(k)); // the edge is not a separator, but belongs to the interior of the subgraph
+      subgraph_inner_edge.push_back(subgraph.at(k)); // the edge is not a loopclosure, but belongs to the interior of the subgraph
     }
     else{
       // Add it as a prior factor using the current estimate from the other graph
@@ -51,7 +51,7 @@ DistributedMapper::createSubgraphInnerAndSepEdges(const NonlinearFactorGraph& su
       if(robot0 == robotName_ || (use_landmarks_ && robot0 == toupper(robotName_))){
         if(!neighbors_.exists(key1)) {
           neighbors_.insert(key1, Pose3());
-          separators_symbols_.emplace_back(std::make_pair(key1, key0));
+          loopclosures_symbols_.emplace_back(std::make_pair(key1, key0));
         }
         if(!neighbor_chars_.count(robot1)) {
           neighbor_chars_.insert(robot1);
@@ -60,7 +60,7 @@ DistributedMapper::createSubgraphInnerAndSepEdges(const NonlinearFactorGraph& su
       else{
         if(!neighbors_.exists(key0)) {
           neighbors_.insert(key0, Pose3());
-          separators_symbols_.emplace_back(std::make_pair(key0, key1));
+          loopclosures_symbols_.emplace_back(std::make_pair(key0, key1));
         }
         if(!neighbor_chars_.count(robot0)) {
           neighbor_chars_.insert(robot0);
@@ -91,11 +91,11 @@ DistributedMapper::loadSubgraphAndCreateSubgraphEdge(const GraphAndValues& graph
       // Convert initial values into row major vector values
   linearized_rotation_ = evaluation_utils::rowMajorVectorValues(initial_);
 
-  // create a nonlinear factor graph with inner edges and store slots of separators
+  // create a nonlinear factor graph with inner edges and store slots of loopclosures
   pair<NonlinearFactorGraph, vector<size_t> > subgraph_edge = createSubgraphInnerAndSepEdges(graph_);
 
   inner_edges_ = subgraph_edge.first;
-  separator_edge_ids_ = subgraph_edge.second;
+  loopclosure_edge_ids_ = subgraph_edge.second;
 
   // Internal cached graphs for distributed estimations
   createLinearOrientationGraph(); // linear orientation graph with inner edges
@@ -120,12 +120,12 @@ DistributedMapper::estimateRotation(){
   // Inner edges for the current subgraph
   gtsam::GaussianFactorGraph rot_subgraph = rot_subgraph_.clone();
 
-  // push back to rotgraph_i separator edges as priors
-  for(size_t s = 0 ; s < separator_edge_ids_.size(); s++){ // for each separator
+  // push back to rotgraph_i loopclosure edges as priors
+  for(size_t s = 0 ; s < loopclosure_edge_ids_.size(); s++){ // for each loopclosure
     // | rj - Mij * ri | = | Mij * ri - rj |, with Mij = diag(Rij',Rij',Rij')
     // |Ab - b| -> Jacobian(key,A,b)
 
-    size_t sep_slot =  separator_edge_ids_[s];
+    size_t sep_slot =  loopclosure_edge_ids_[s];
     boost::shared_ptr<BetweenFactor<Pose3> > pose3_between =
         boost::dynamic_pointer_cast<BetweenFactor<Pose3> >(graph_.at(sep_slot));
 
@@ -225,16 +225,16 @@ DistributedMapper::estimatePoses(){
   // Compute linearization point from rotation estimate (we need to project to SO(3))
   GaussianFactorGraph dist_GFG = dist_GFG_.clone();
 
-  // push back to dist_GFG_i separator edges as priors
-  for(size_t s = 0 ; s < separator_edge_ids_.size(); s++){ // for each separator
+  // push back to dist_GFG_i loopclosure edges as priors
+  for(size_t s = 0 ; s < loopclosure_edge_ids_.size(); s++){ // for each loopclosure
     // | rj - Mij * ri | = | Mij * ri - rj |, with Mij = diag(Rij',Rij',Rij')
     // |Ab - b| -> Jacobian(key,A,b)
 
-    size_t sep_slot =  separator_edge_ids_[s];
+    size_t sep_slot =  loopclosure_edge_ids_[s];
     boost::shared_ptr<BetweenFactor<Pose3> > pose3_between =
         boost::dynamic_pointer_cast<BetweenFactor<Pose3> >(graph_.at(sep_slot));
 
-    // Construct between chordal factor corresponding to separator edges
+    // Construct between chordal factor corresponding to loopclosure edges
     KeyVector keys = pose3_between->keys();
     Symbol key0 = keys.at(0);
     Symbol key1 = keys.at(1);

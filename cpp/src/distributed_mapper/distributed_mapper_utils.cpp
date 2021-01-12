@@ -18,7 +18,7 @@ orderRobots(const std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
 
   if(nr_robots > 2){
     if(use_flagged_init){
-      // Adjacency matrix is such that adj_matrix(i,j) returns the number of separators connecting robot i to robot j.
+      // Adjacency matrix is such that adj_matrix(i,j) returns the number of loopclosures connecting robot i to robot j.
       // TODO: Test if the matrix is symmetric with zero diagonal entries
       gtsam::Matrix adj_matrix = gtsam::zeros(nr_robots, nr_robots);
       for(size_t robot_i = 0; robot_i < nr_robots; robot_i++){
@@ -32,7 +32,7 @@ orderRobots(const std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
         }
       }
 
-      std::multimap<int,int> adjacency_map; // <num_separators, subgraph_id>
+      std::multimap<int,int> adjacency_map; // <num_loopclosures, subgraph_id>
       std::multimap<int,int>::reverse_iterator adjacency_map_iterator; // from large to small
 
       while(1){

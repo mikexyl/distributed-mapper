@@ -26,13 +26,13 @@ void RobotMeasurements::addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& f
     transform.pose.pose = factor.measured();
     transform.pose.covariance_matrix = covariance_matrix;
     
-    transform.is_separator = false;
+    transform.is_loopclosure = false;
     if (gtsam::Symbol(transform.i).chr() != gtsam::Symbol(transform.j).chr()) {
-        transform.is_separator = true;
+        transform.is_loopclosure = true;
         loop_closures_.emplace_back(std::make_pair(transform.i, transform.j));
     }
 
-    if (!transform.is_separator) {
+    if (!transform.is_loopclosure) {
         if (!id_initialized_) {
             transforms_.start_id = transform.i;
             transforms_.end_id = transform.j;

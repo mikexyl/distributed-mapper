@@ -15,7 +15,7 @@ var searchData=
   ['inneredges_5f',['innerEdges_',['../classdistributed__mapper_1_1_distributed_mapper.html#a8f16e18f0f1d350d6c41de9d669ffc17',1,'distributed_mapper::DistributedMapper']]],
   ['insertvalue',['insertValue',['../classdistributed__mapper_1_1_distributed_mapper.html#ae4fb228e732774584120e0b150686f84',1,'distributed_mapper::DistributedMapper']]],
   ['intvector',['IntVector',['../namespace_f_m_c.html#a00bd18889e22785a7558402d6397973a',1,'FMC']]],
-  ['is_5fseparator',['is_separator',['../structgraph__utils_1_1_transform.html#a6d394c92ac9cfdb46b06f08a71a9d608',1,'graph_utils::Transform']]],
+  ['is_5floopclosure',['is_loopclosure',['../structgraph__utils_1_1_transform.html#a6d394c92ac9cfdb46b06f08a71a9d608',1,'graph_utils::Transform']]],
   ['isintrajectory',['isInTrajectory',['../namespacegraph__utils.html#a5e9717352bed2d3c8ce7a639ea19f3b6',1,'graph_utils']]],
   ['isrobotinitialized',['isRobotInitialized',['../classdistributed__mapper_1_1_distributed_mapper.html#a39a22c56571a35b5f752dd5436794956',1,'distributed_mapper::DistributedMapper']]]
 ];

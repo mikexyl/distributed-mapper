@@ -474,7 +474,7 @@ table.memberdecls {
 	color: #555;
 }
 
-.memSeparator {
+.memloopclosure {
         border-bottom: 1px solid #DEE4F0;
         line-height: 1px;
         margin: 0px;

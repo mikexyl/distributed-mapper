@@ -50,7 +50,7 @@ class DistributedMapper{
       rot_subgraph_ = gtsam::GaussianFactorGraph();
       initial_ = gtsam::Values();
       neighbors_ = gtsam::Values();
-      separators_symbols_ = std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>>();
+      loopclosures_symbols_ = std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>>();
       rotation_error_trace_ = std::vector<double>();
       pose_error_trace_ = std::vector<double>();
       rotation_estimate_change_trace_ = std::vector<double>();
@@ -77,7 +77,7 @@ class DistributedMapper{
       rot_subgraph_ = gtsam::GaussianFactorGraph();
       initial_ = gtsam::Values();
       neighbors_ = gtsam::Values();
-      separators_symbols_ = std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>>();
+      loopclosures_symbols_ = std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>>();
       rotation_error_trace_ = std::vector<double>();
       pose_error_trace_ = std::vector<double>();
       rotation_estimate_change_trace_ = std::vector<double>();
@@ -131,8 +131,8 @@ class DistributedMapper{
     createSubgraphInnerAndSepEdges(const gtsam::NonlinearFactorGraph& subgraph);
 
     /**
-     * @brief loadSubgraphsAndCreateSubgraphEdges loads the subgraph graphAndValues and creates inner and separator edges
-     * @param graphAndValues contains the current subgraph and separator edges
+     * @brief loadSubgraphsAndCreateSubgraphEdges loads the subgraph graphAndValues and creates inner and loopclosure edges
+     * @param graphAndValues contains the current subgraph and loopclosure edges
      */
     void loadSubgraphAndCreateSubgraphEdge(const gtsam::GraphAndValues& graph_and_values);
 
@@ -196,8 +196,8 @@ class DistributedMapper{
     /** @brief innerEdges returns the inner edges  */
     gtsam::NonlinearFactorGraph innerEdges(){ return inner_edges_; }
 
-    /** @brief separatorEdges returns indices of separator edges  */
-    std::vector<size_t> separatorEdge(){ return separator_edge_ids_; }
+    /** @brief loopclosureEdges returns indices of loopclosure edges  */
+    std::vector<size_t> loopclosureEdge(){ return loopclosure_edge_ids_; }
 
     /** @brief subgraphs */
     gtsam::NonlinearFactorGraph currentGraph(){ return graph_; }
@@ -205,14 +205,14 @@ class DistributedMapper{
     /** @brief neighbors returns the neighboring values  */
     gtsam::Values neighbors() {return neighbors_;}
 
-    /** @brief neighbors returns the separators factor symbols  */
-    std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>> separatorsSymbols() {return separators_symbols_;}
+    /** @brief neighbors returns the loopclosures factor symbols  */
+    std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>> separatorsSymbols() {return loopclosures_symbols_;}
 
-    /** @brief erase separators factor symbols  */
-    void eraseSeparatorsSymbols(const std::pair<gtsam::Symbol, gtsam::Symbol>& symbols) {
-      auto it = std::find(separators_symbols_.begin(), separators_symbols_.end(), symbols);
-      if (it != separators_symbols_.end()) {
-        separators_symbols_.erase(it);
+    /** @brief erase loopclosures factor symbols  */
+    void eraseseparatorsSymbols(const std::pair<gtsam::Symbol, gtsam::Symbol>& symbols) {
+      auto it = std::find(loopclosures_symbols_.begin(), loopclosures_symbols_.end(), symbols);
+      if (it != loopclosures_symbols_.end()) {
+        loopclosures_symbols_.erase(it);
       }
     }
 
@@ -230,18 +230,18 @@ class DistributedMapper{
         graph_.erase(graph_.begin()+index);
     }
 
-    /** @brief allows to erase a separator ID.
+    /** @brief allows to erase a loopclosure ID.
      *  @param id is the id to be removed
      */
-    void setSeparatorIds(const std::vector<size_t>& ids){
-        separator_edge_ids_ = ids;
+    void setloopclosureIds(const std::vector<size_t>& ids){
+        loopclosure_edge_ids_ = ids;
     }
 
-    /** @brief allows to erase a separator ID.
+    /** @brief allows to erase a loopclosure ID.
      *  @param id is the id to be removed
      */
-    void eraseSeparatorId(const int& id){
-        separator_edge_ids_.erase(find(separator_edge_ids_.begin(), separator_edge_ids_.end(), id));
+    void eraseloopclosureId(const int& id){
+        loopclosure_edge_ids_.erase(find(loopclosure_edge_ids_.begin(), loopclosure_edge_ids_.end(), id));
     }
 
     /**
@@ -282,7 +282,7 @@ class DistributedMapper{
         createLinearOrientationGraph(); // TODO: Rebuilds entire linear orientation graph everytime a factor is added
       }
       else{
-        separator_edge_ids_.push_back(graph_.size() -1);
+        loopclosure_edge_ids_.push_back(graph_.size() -1);
       }
 
       // Clear traces
@@ -567,10 +567,10 @@ class DistributedMapper{
     char robotName_;// Key for each robot
     gtsam::NonlinearFactorGraph graph_; // subgraph corresponding to each robot
     gtsam::Values initial_; // subinitials corresponding to each robot        
-    gtsam::NonlinearFactorGraph inner_edges_; // edges involving keys from a single robot (exclude separator edges)
-    std::vector<size_t>  separator_edge_ids_; // for each robot stores the position of the factors corresponding to separator edges
+    gtsam::NonlinearFactorGraph inner_edges_; // edges involving keys from a single robot (exclude loopclosure edges)
+    std::vector<size_t>  loopclosure_edge_ids_; // for each robot stores the position of the factors corresponding to loopclosure edges
     gtsam::Values neighbors_; // contains keys of all the neighboring robots
-    std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>> separators_symbols_; // contains keys of all the separators
+    std::vector<std::pair<gtsam::Symbol, gtsam::Symbol>> loopclosures_symbols_; // contains keys of all the loopclosures
     std::set<char> neighbor_chars_; // contains neighboring robot symbols
     double latest_change_; // Latest change in estimate, stopping condition
     bool use_between_noise_; // To use the between factor noise instead of isotropic unit noise during pose estimation

@@ -4,7 +4,7 @@ var searchData=
   ['serialize',['serialize',['../classgtsam_1_1_between_chordal_factor.html#a8578003909be77aef605aac7b2acd89e',1,'gtsam::BetweenChordalFactor']]],
   ['setflaggedinit',['setFlaggedInit',['../classdistributed__mapper_1_1_distributed_mapper.html#abeb3787d78d31e0da162209c5db94f2d',1,'distributed_mapper::DistributedMapper']]],
   ['setgamma',['setGamma',['../classdistributed__mapper_1_1_distributed_mapper.html#a8199efb8623ba275e52e3e00762ba142',1,'distributed_mapper::DistributedMapper']]],
-  ['setseparatorids',['setSeparatorIds',['../classdistributed__mapper_1_1_distributed_mapper.html#a83ed13413c8929709769e5da683c9124',1,'distributed_mapper::DistributedMapper']]],
+  ['setloopclosureids',['setloopclosureIds',['../classdistributed__mapper_1_1_distributed_mapper.html#a83ed13413c8929709769e5da683c9124',1,'distributed_mapper::DistributedMapper']]],
   ['setupdatetype',['setUpdateType',['../classdistributed__mapper_1_1_distributed_mapper.html#ac08da900d841b6d7c72c324c745331f8',1,'distributed_mapper::DistributedMapper']]],
   ['setusebetweennoiseflag',['setUseBetweenNoiseFlag',['../classdistributed__mapper_1_1_distributed_mapper.html#a5e05ccc7e0299239b5e27c41cb547f91',1,'distributed_mapper::DistributedMapper']]],
   ['setuselandmarksflag',['setUseLandmarksFlag',['../classdistributed__mapper_1_1_distributed_mapper.html#aade351cfd75a6a09e11274e5457ad92d',1,'distributed_mapper::DistributedMapper']]],

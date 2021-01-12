@@ -32,7 +32,7 @@ struct PoseWithCovariance {
 struct Transform {
     gtsam::Key i, j;
     graph_utils::PoseWithCovariance pose;
-    bool is_separator;
+    bool is_loopclosure;
 };
 
 /** \struct Transforms

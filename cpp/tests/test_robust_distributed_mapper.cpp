@@ -204,7 +204,7 @@ TEST(DistributedMapper, test_distributed_estimation_4robots) {
 TEST(DistributedMapper, test_distributed_estimation_8robots) {
     // Parameters
     size_t nr_robots = 8; // number of robots
-    size_t nr_separators_by_pair = 4; // number of separators by pair of robots
+    size_t nr_loopclosures_by_pair = 4; // number of loopclosures by pair of robots
     string log_dir("/tmp/"); // log directory
     string data_dir("../../../test_data/pairwise_consistency_maximization/spoiled/simulation/example_8robots/"); // data directory
     string trace_file("/tmp/runG2o"); // data directory
@@ -234,14 +234,14 @@ TEST(DistributedMapper, test_distributed_estimation_8robots) {
     // Compare centralized and distributed pose estimates
     double tolerance = 1e-1;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance));
-    EXPECT(std::get<2>(results) == (nr_robots-1)*nr_robots*nr_separators_by_pair/2);
+    EXPECT(std::get<2>(results) == (nr_robots-1)*nr_robots*nr_loopclosures_by_pair/2);
 }
 
 
 TEST(DistributedMapper, test_distributed_estimation_16robots) {
     // Parameters
     size_t nr_robots = 16; // number of robots
-    size_t nr_separators_by_pair = 4; // number of separators by pair of robots
+    size_t nr_loopclosures_by_pair = 4; // number of loopclosures by pair of robots
     string log_dir("/tmp/"); // log directory
     string data_dir("../../../test_data/pairwise_consistency_maximization/spoiled/simulation/example_16robots/"); // data directory
     string trace_file("/tmp/runG2o"); // data directory
@@ -271,13 +271,13 @@ TEST(DistributedMapper, test_distributed_estimation_16robots) {
     // Compare centralized and distributed pose estimates
     double tolerance = 2e0;
     EXPECT(assert_equal(std::get<0>(results), std::get<1>(results), tolerance));
-    EXPECT(std::abs((int)(std::get<2>(results)-(nr_robots-1)*nr_robots*nr_separators_by_pair/2)) < 5);
+    EXPECT(std::abs((int)(std::get<2>(results)-(nr_robots-1)*nr_robots*nr_loopclosures_by_pair/2)) < 5);
 }
 
 TEST(DistributedMapper, test_distributed_estimation_no_outliers_argos_2robots) {
     // Parameters
     size_t nr_robots = 2; // number of robots
-    // size_t nr_separators_by_pair = 4; // number of separators by pair of robots
+    // size_t nr_loopclosures_by_pair = 4; // number of loopclosures by pair of robots
     string log_dir("/tmp/"); // log directory
     string data_dir("../../../test_data/argos_simulation/clean/example_2robots/"); // data directory
     string trace_file("/tmp/runG2o"); // data directory

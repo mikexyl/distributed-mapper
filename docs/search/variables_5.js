@@ -9,5 +9,5 @@ var searchData=
   ['info_5fplatform',['info_platform',['../_c_make_c_compiler_id_8c.html#a2321403dee54ee23f0c2fa849c60f7d4',1,'info_platform():&#160;CMakeCCompilerId.c'],['../_c_make_c_x_x_compiler_id_8cpp.html#a2321403dee54ee23f0c2fa849c60f7d4',1,'info_platform():&#160;CMakeCXXCompilerId.cpp']]],
   ['initial_5f',['initial_',['../classdistributed__mapper_1_1_distributed_mapper.html#a129b55ec4cbf30c56114bce2c477e262',1,'distributed_mapper::DistributedMapper']]],
   ['inneredges_5f',['innerEdges_',['../classdistributed__mapper_1_1_distributed_mapper.html#a8f16e18f0f1d350d6c41de9d669ffc17',1,'distributed_mapper::DistributedMapper']]],
-  ['is_5fseparator',['is_separator',['../structgraph__utils_1_1_transform.html#a6d394c92ac9cfdb46b06f08a71a9d608',1,'graph_utils::Transform']]]
+  ['is_5floopclosure',['is_loopclosure',['../structgraph__utils_1_1_transform.html#a6d394c92ac9cfdb46b06f08a71a9d608',1,'graph_utils::Transform']]]
 ];
