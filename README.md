@@ -37,8 +37,17 @@ a Two-Stage Distributed Gauss-Seidel Approach},
 
 For the outlier rejection implementation cite:
 
-
 ```
+@inproceedings{mangelsonPairwiseConsistentMeasurement2018,
+  title = {Pairwise {{Consistent Measurement Set Maximization}} for {{Robust Multi-Robot Map Merging}}},
+  booktitle = {2018 {{IEEE International Conference}} on {{Robotics}} and {{Automation}} ({{ICRA}})},
+  author = {Mangelson, Joshua G. and Dominic, Derrick and Eustice, Ryan M. and Vasudevan, Ram},
+  year = {2018},
+  month = may,
+  pages = {2916--2923},
+  issn = {2577-087X},
+  doi = {10.1109/ICRA.2018.8460217}
+}
 
 @article{lajoieDOORSLAMDistributedOnline2020,
   title = {{{DOOR}}-{{SLAM}}: {{Distributed}}, {{Online}}, and {{Outlier Resilient SLAM}} for {{Robotic Teams}}},
