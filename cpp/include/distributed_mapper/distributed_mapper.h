@@ -24,7 +24,7 @@ namespace distributed_mapper{
 
 
 // Static Consts
-static const gtsam::Matrix I9 = gtsam::eye(9);
+static const gtsam::Matrix I9 = Eigen::MatrixXd::Identity(9,9);
 static const gtsam::Vector zero9 = gtsam::Vector::Zero(9);
 static const size_t max_iter_ = 1000;
 static const gtsam::Key key_anchor_ = gtsam::symbol('Z', 9999999);
@@ -302,7 +302,7 @@ class DistributedMapper{
       }
       else{
         neighbors_.insert(key, pose);
-        neighbors_linearized_poses_.insert(key, gtsam::zero(6));
+        neighbors_linearized_poses_.insert(key, gtsam::Matrix::Zero(6, 6));
         gtsam::Matrix3 R = pose.rotation().matrix();
         gtsam::Vector r = evaluation_utils::rowMajorVector(R);
         neighbors_linearized_rotations_.insert(key, r);

@@ -20,7 +20,7 @@ orderRobots(const std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
     if(use_flagged_init){
       // Adjacency matrix is such that adj_matrix(i,j) returns the number of loopclosures connecting robot i to robot j.
       // TODO: Test if the matrix is symmetric with zero diagonal entries
-      gtsam::Matrix adj_matrix = gtsam::zeros(nr_robots, nr_robots);
+      gtsam::Matrix adj_matrix = gtsam::Matrix::Zero(nr_robots, nr_robots);
       for(size_t robot_i = 0; robot_i < nr_robots; robot_i++){
         gtsam::Values neighbors = dist_mappers[robot_i]->neighbors(); // Get neighboring values
         for(const gtsam::Values::ConstKeyValuePair& key_value: neighbors){
@@ -520,6 +520,12 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
                                                              pcm_threshold, use_covariance, use_heuristics);
     max_clique_size = max_clique_info.first;
   }
+
+  gtsam::GraphAndValues full_graph_and_values = evaluation_utils::readFullGraph(graph_and_values_vec.get());
+
+  // Write filtered full graph
+  std::string dist_optimized = "filtered_graph_initial.g2o";
+  gtsam::writeG2o(*(full_graph_and_values.first), *(full_graph_and_values.second), dist_optimized);
 
   if(debug)
     std::cout << "Starting Optimizer"  << std::endl;

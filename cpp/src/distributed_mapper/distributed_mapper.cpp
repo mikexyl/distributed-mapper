@@ -150,7 +150,7 @@ DistributedMapper::estimateRotation(){
     // if using between noise, use the factor noise model converted to a conservative diagonal estimate
     SharedDiagonal model = rotation_noise_model_;
     if(use_between_noise_){
-        model = evaluation_utils::convertToDiagonalNoise(pose3_between->get_noiseModel());
+        model = evaluation_utils::convertToDiagonalNoise(pose3_between->noiseModel());
       }
 
     if(robot0 == robotName_){ // robot i owns the first key
@@ -201,7 +201,7 @@ DistributedMapper::chordalFactorGraph(){
           Pose3 measured = factor->measured();
           if(use_between_noise_){
               // Convert noise model to chordal factor noise
-              SharedNoiseModel chordal_noise = evaluation_utils::convertToChordalNoise(factor->get_noiseModel());
+              SharedNoiseModel chordal_noise = evaluation_utils::convertToChordalNoise(factor->noiseModel());
               //chordal_noise->print("Chordal Noise: \n");
               chordal_graph_.add(BetweenChordalFactor<Pose3>(key1, key2, measured, chordal_noise));
             }
@@ -262,7 +262,7 @@ DistributedMapper::estimatePoses(){
             Vector b = -(M1 * neighbors_linearized_poses_.at(key1) + error);
             if(use_between_noise_){
                 Rot3 rotation = initial_.at<Pose3>(key0).rotation();
-                SharedNoiseModel chordal_noise = evaluation_utils::convertToChordalNoise(pose3_between->get_noiseModel(), rotation.matrix());
+                SharedNoiseModel chordal_noise = evaluation_utils::convertToChordalNoise(pose3_between->noiseModel(), rotation.matrix());
                 chordal_noise->WhitenSystem(A, b);
               }
             dist_GFG.add(key0, A, b, pose_noise_model_);
@@ -276,7 +276,7 @@ DistributedMapper::estimatePoses(){
             Vector b = -(M0 * neighbors_linearized_poses_.at(key0) + error);
             if(use_between_noise_){
                 Rot3 rotation = neighbors_.at<Pose3>(key0).rotation();
-                SharedNoiseModel chordal_noise = evaluation_utils::convertToChordalNoise(pose3_between->get_noiseModel(), rotation.matrix());
+                SharedNoiseModel chordal_noise = evaluation_utils::convertToChordalNoise(pose3_between->noiseModel(), rotation.matrix());
                 chordal_noise->WhitenSystem(A, b);
               }
             dist_GFG.add(key1, A, b, pose_noise_model_);

@@ -154,7 +154,7 @@ namespace distributed_mapper{
    * @param noise is shared noise model
    * @return converted noise
    */
-    gtsam::SharedNoiseModel convertToChordalNoise(const gtsam::SharedNoiseModel& noise, const gtsam::Matrix& Rhat = gtsam::eye(3));
+    gtsam::SharedNoiseModel convertToChordalNoise(const gtsam::SharedNoiseModel& noise, const gtsam::Matrix& Rhat = Eigen::MatrixXd::Identity(3, 3));
 
 
     /**
