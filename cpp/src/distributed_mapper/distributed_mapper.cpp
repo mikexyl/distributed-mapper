@@ -35,8 +35,8 @@ DistributedMapper::createSubgraphInnerAndSepEdges(const NonlinearFactorGraph& su
     Key chr_mask = Key(UCHAR_MAX)  << index_bits; // For some reason, std::numeric_limits<unsigned char>::max() fails
     Key index_mask = ~chr_mask;
 
-    char robot0 = symbolChr(key0);
-    char robot1 = symbolChr(key1);
+    char robot0 = LabeledSymbol(key0).robot_id();
+    char robot1 = LabeledSymbol(key1).robot_id();
 
     if (robot0 == robot1 || (use_landmarks_ && robot1 == toupper(robot0))){ // keys from the same subgraph
       if(verbosity_ >= DEBUG) cout << "Factor connecting (intra): " << robot0 << " " << symbolIndex(key0) << " " <<  robot1 << " " << symbolIndex(key1) << endl;
@@ -138,8 +138,8 @@ DistributedMapper::estimateRotation(){
     KeyVector keys = pose3_between->keys();
     Symbol key0 = keys.at(0);
     Symbol key1 = keys.at(1);
-    char robot0 = symbolChr(key0);
-    char robot1 = symbolChr(key1);
+    char robot0 = LabeledSymbol(key0).robot_id();
+    char robot1 = LabeledSymbol(key1).robot_id();
 
     // Landmarks use Upper case robot symbol
     if(use_landmarks_){
@@ -167,8 +167,8 @@ DistributedMapper::estimateRotation(){
       }
     }
     else{
-      cout << "robot0 != robotNames[i] and robot1 != robotNames[i]: " <<
-              robot0 << " " << robot1 << " " << endl;
+      cout << "0: robot0 != robotNames[i] and robot1 != robotNames[i]: " <<
+              robot0 << " " << robot1 << " " << robotName_ << endl;
       exit(1);
     }
   }
@@ -238,8 +238,8 @@ DistributedMapper::estimatePoses(){
     KeyVector keys = pose3_between->keys();
     Symbol key0 = keys.at(0);
     Symbol key1 = keys.at(1);
-    char robot0 = symbolChr(key0);
-    char robot1 = symbolChr(key1);
+    char robot0 = LabeledSymbol(key0).robot_id();
+    char robot1 = LabeledSymbol(key1).robot_id();
     Pose3 measured = pose3_between->measured();
 
     BetweenChordalFactor<Pose3> between_chordal_factor(key0, key1, measured, pose_noise_model_);
@@ -283,7 +283,7 @@ DistributedMapper::estimatePoses(){
         }
       }
     else{
-        cout << "robot0 != robotNames[i] and robot1 != robotNames[i]: " <<
+        cout << "1: robot0 != robotNames[i] and robot1 != robotNames[i]: " <<
                 robot0 << " " << robot1 << " " << endl;
       exit(1);
     }

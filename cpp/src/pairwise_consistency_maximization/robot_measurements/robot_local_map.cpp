@@ -36,9 +36,9 @@ void RobotLocalMap::addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& facto
     }
 
     graph_utils::PoseWithCovariance total_pose;
-    gtsam::Key key1 = factor.key1();
-    gtsam::Key key2 = factor.key2();
-    if (gtsam::Symbol(key1).chr() != gtsam::Symbol(trajectory_.start_id).chr()) {
+    gtsam::LabeledSymbol key1 = factor.key1();
+    gtsam::LabeledSymbol key2 = factor.key2();
+    if (gtsam::LabeledSymbol(key1).robot_id() != gtsam::LabeledSymbol(trajectory_.start_id).robot_id()) {
         key1 = factor.key2();
         key2 = factor.key1();
     }

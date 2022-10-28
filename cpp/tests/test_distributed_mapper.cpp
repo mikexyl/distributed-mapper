@@ -26,7 +26,7 @@ noiseModel::Diagonal::shared_ptr priorModel = //
         noiseModel::Isotropic::Variance(6, 1e-12);
 
 string robotNames_("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-static const Matrix zero33= Matrix::Zero(3,3);
+static const Matrix Zero33= Matrix::Zero(3,3);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ distributedEstimation(size_t nrRobots, string dataPath, string traceFile, Values
         M9.block(0,0,3,3) = Rij;
         M9.block(3,3,3,3) = Rij;
         M9.block(6,6,3,3) = Rij;
-        centralizedLinearGraph.add(key1, -I9, key2, M9, zero9, rotationGraphModel);
+        centralizedLinearGraph.add(key1, -I9, key2, M9, Zero9, rotationGraphModel);
     }
     GaussianFactorGraph centralizedLinearGraphWithoutPrior = centralizedLinearGraph.clone();
 

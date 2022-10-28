@@ -33,7 +33,7 @@ namespace distributed_pcm {
         return std::make_pair(total_max_clique_sizes, total_outliers_rejected);
     }
 
-    std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::Key, gtsam::Key>>, std::set<std::pair<gtsam::Key, gtsam::Key>>>> 
+    std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>>, std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>>>> 
                 DistributedPCM::solveDecentralized(const int& other_robot_id,
                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                 gtsam::GraphAndValues& local_graph_and_values,
@@ -106,7 +106,7 @@ namespace distributed_pcm {
                         transforms.transforms.insert(
                                 std::make_pair(std::make_pair(edge_ptr->key1(), edge_ptr->key2()), transform));
                     } else {
-                        loopclosures_transforms_by_pair.at(std::make_pair(gtsam::symbolChr(edge_ptr->key1()),gtsam::symbolChr(edge_ptr->key2()))).transforms.insert(
+                        loopclosures_transforms_by_pair.at(std::make_pair(gtsam::LabeledSymbol(edge_ptr->key1()).robot_id(),gtsam::LabeledSymbol(edge_ptr->key2()).robot_id())).transforms.insert(
                                 std::make_pair(std::make_pair(edge_ptr->key1(), edge_ptr->key2()), transform));
                     }
                 }
@@ -159,8 +159,8 @@ namespace distributed_pcm {
             }
             for (int i = 0; i < number_of_edges; i++) {
                 auto keys = dist_mappers[robot]->currentGraph().at(i)->keys();
-                char robot0 = gtsam::symbolChr(keys.at(0));
-                char robot1 = gtsam::symbolChr(keys.at(1));
+                char robot0 = gtsam::LabeledSymbol(keys.at(0)).robot_id();
+                char robot1 = gtsam::LabeledSymbol(keys.at(1)).robot_id();
                 if (robot0 != robot1) {
                     new_loopclosure_ids.push_back(i);
                 }
@@ -170,7 +170,7 @@ namespace distributed_pcm {
         return std::make_pair(max_clique.size(), max_clique_info.second);
     }
 
-    std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::Key, gtsam::Key>>, std::set<std::pair<gtsam::Key, gtsam::Key>>>>
+    std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>>, std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>>>>
              DistributedPCM::executePCMDecentralized(const int& other_robot_id, robot_measurements::RobotLocalMap& robot_local_map,
                                             const robot_measurements::RobotLocalMap& other_robot_local_info,
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
@@ -181,8 +181,8 @@ namespace distributed_pcm {
 
         graph_utils::Transforms roboti_robotj_loopclosures_transforms;
         for (const auto& transform : robot_local_map.getTransforms().transforms) {
-            auto id_1 = (int) (gtsam::Symbol(transform.second.i).chr()-97);
-            auto id_2 = (int) (gtsam::Symbol(transform.second.j).chr()-97);
+            auto id_1 = (int) (gtsam::LabeledSymbol(transform.second.i).robot_id()-97);
+            auto id_2 = (int) (gtsam::LabeledSymbol(transform.second.j).robot_id()-97);
             if (id_1 == other_robot_id || id_2 == other_robot_id) {
                 roboti_robotj_loopclosures_transforms.transforms.insert(transform);
             }
@@ -198,7 +198,7 @@ namespace distributed_pcm {
         // Retrieve indexes of rejected measurements
         auto loopclosures_ids = dist_mapper->loopclosureEdge();
         std::vector<int> rejected_loopclosure_ids;
-        std::set<std::pair<gtsam::Key, gtsam::Key>> accepted_key_pairs, rejected_key_pairs;
+        std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>> accepted_key_pairs, rejected_key_pairs;
         for (int i = 0; i < loopclosures_ids.size(); i++) {
             if (isloopclosureToBeRejected(max_clique, loopclosures_ids[i], roboti_robotj_loopclosures_transforms,
                                         interrobot_measurements.getLoopClosures(), dist_mapper)) {
@@ -232,8 +232,8 @@ namespace distributed_pcm {
         }
         for (int i = 0; i < number_of_edges; i++) {
             auto keys = dist_mapper->currentGraph().at(i)->keys();
-            char robot0 = gtsam::symbolChr(keys.at(0));
-            char robot1 = gtsam::symbolChr(keys.at(1));
+            char robot0 = gtsam::LabeledSymbol(keys.at(0)).robot_id();
+            char robot1 = gtsam::LabeledSymbol(keys.at(1)).robot_id();
             if (robot0 != robot1) {
                 new_loopclosure_ids.push_back(i);
             }
@@ -248,10 +248,10 @@ namespace distributed_pcm {
 
         auto loopclosure_factor = boost::dynamic_pointer_cast<gtsam::BetweenFactor<gtsam::Pose3> >(dist_mapper->currentGraph().at(separtor_id));
         // First check if the loopclosure is between the 2 robots
-        if (!((gtsam::symbolChr(loopclosure_factor->keys().at(0)) == gtsam::symbolChr(loopclosures_transforms.transforms.begin()->first.first)
-                && gtsam::symbolChr(loopclosure_factor->keys().at(1)) == gtsam::symbolChr(loopclosures_transforms.transforms.begin()->first.second)) ||
-              (gtsam::symbolChr(loopclosure_factor->keys().at(0)) == gtsam::symbolChr(loopclosures_transforms.transforms.begin()->first.second)
-                && gtsam::symbolChr(loopclosure_factor->keys().at(1)) == gtsam::symbolChr(loopclosures_transforms.transforms.begin()->first.first)))){
+        if (!((gtsam::LabeledSymbol(loopclosure_factor->keys().at(0)).robot_id() == gtsam::LabeledSymbol(loopclosures_transforms.transforms.begin()->first.first).robot_id()
+                && gtsam::LabeledSymbol(loopclosure_factor->keys().at(1)).robot_id() == gtsam::LabeledSymbol(loopclosures_transforms.transforms.begin()->first.second).robot_id()) ||
+              (gtsam::LabeledSymbol(loopclosure_factor->keys().at(0)).robot_id() == gtsam::LabeledSymbol(loopclosures_transforms.transforms.begin()->first.second).robot_id()
+                && gtsam::LabeledSymbol(loopclosure_factor->keys().at(1)).robot_id() == gtsam::LabeledSymbol(loopclosures_transforms.transforms.begin()->first.first).robot_id()))){
             return false;
         }
         // Check if in the maximum clique

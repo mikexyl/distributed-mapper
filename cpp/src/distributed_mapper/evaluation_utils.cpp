@@ -5,10 +5,12 @@ using namespace gtsam;
 
 namespace distributed_mapper {
 
+#define GRAPH_LABEL 'g'
+
 static const Matrix I9 = Eigen::MatrixXd::Identity(9,9);
-static const Vector zero9 = Vector::Zero(9);
-static const Matrix zero33 = Matrix::Zero(3, 3);
-static const Key key_anchor = symbol('Z', 9999999);
+static const Vector Zero9 = Vector::Zero(9);
+static const Matrix Zero33 = Matrix::Zero(3, 3);
+static const Key key_anchor = 18295873486192640;
 
 namespace evaluation_utils{
   //*****************************************************************************
@@ -45,7 +47,7 @@ namespace evaluation_utils{
     Values poses;
     for (const Values::ConstKeyValuePair &key_value: rotations) {
       Key key = key_value.key;
-      Pose3 pose(rotations.at<Rot3>(key), gtsam::Matrix::Zero(3,3));
+      Pose3 pose(rotations.at<Rot3>(key), gtsam::Vector::Zero(3));
       poses.insert(key, pose);
     }
     return poses;
@@ -56,7 +58,7 @@ namespace evaluation_utils{
     VectorValues vector_values;
     for (const Values::ConstKeyValuePair &key_value: rotations) {
       Key key = key_value.key;
-      vector_values.insert(key, gtsam::Matrix::Zero(6,6));
+      vector_values.insert(key, gtsam::Vector::Zero(6));
     }
     return vector_values;
   }
@@ -66,7 +68,7 @@ namespace evaluation_utils{
   initializeZeroRotation(const Values& sub_initials) {
     VectorValues sub_initials_vector_value;
     for (const Values::ConstKeyValuePair &key_value: sub_initials) {
-      Vector r = gtsam::Matrix::Zero(9,9);
+      Vector r = gtsam::Vector::Zero(9);
       sub_initials_vector_value.insert(key_value.key, r);
     }
     return sub_initials_vector_value;
@@ -201,14 +203,16 @@ namespace evaluation_utils{
       M9.block(3, 3, 3, 3) = Rij;
       M9.block(6, 6, 3, 3) = Rij;
 
-      linear_graph.add(key1, -I9, key2, M9, zero9, model);
+      linear_graph.add(key1, -I9, key2, M9, Zero9, model);
     }
     // prior on the anchor orientation
-    SharedDiagonal prior_model = noiseModel::Unit::Create(9);
-    linear_graph.add(key_anchor,
-                    I9,
-                    (Vector(9) << 1.0, 0.0, 0.0,/*  */ 0.0, 1.0, 0.0, /*  */ 0.0, 0.0, 1.0).finished(),
-                    prior_model);
+    if (!linear_graph.exists(key_anchor)) {
+      SharedDiagonal prior_model = noiseModel::Unit::Create(9);
+      linear_graph.add(key_anchor,
+                      I9,
+                      (Vector(9) << 1.0, 0.0, 0.0,/*  */ 0.0, 1.0, 0.0, /*  */ 0.0, 0.0, 1.0).finished(),
+                      prior_model);
+    }
     return linear_graph;
   }
 

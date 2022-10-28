@@ -40,7 +40,7 @@ namespace distributed_pcm {
          * @param graph_and_values is the collection of factors of all graph used for evaluation
          * @returns size of the maximum clique of pairwise consistent measurements and number of outliers rejected
          */
-        static std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::Key, gtsam::Key>>, std::set<std::pair<gtsam::Key, gtsam::Key>>>>
+        static std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>>, std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>>>>
                             solveDecentralized(const int& other_robot_id,
                                 boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,
                                 gtsam::GraphAndValues& local_graph_and_values,
@@ -66,7 +66,7 @@ namespace distributed_pcm {
                                         const double& pcm_threshold,
                                         const bool& use_heuristics);
 
-        static std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::Key, gtsam::Key>>, std::set<std::pair<gtsam::Key, gtsam::Key>>>>
+        static std::pair<std::pair<int, int>, std::pair<std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>>, std::set<std::pair<gtsam::LabeledSymbol, gtsam::LabeledSymbol>>>>
                                         executePCMDecentralized(const int& other_robot_id, robot_measurements::RobotLocalMap& robot_local_map,
                                             const robot_measurements::RobotLocalMap& other_robot_local_info,
                                             boost::shared_ptr<distributed_mapper::DistributedMapper>& dist_mapper,

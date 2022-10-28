@@ -9,6 +9,7 @@
 #include <gtsam/geometry/Rot3.h>
 #include <gtsam/slam/BetweenFactor.h>
 #include <gtsam/inference/Symbol.h>
+#include <distributed_mapper/LabeledSymbol.h>
 
 #include <map>
 #include <vector>

@@ -88,6 +88,7 @@ add_library (distributed_mapper
         include/distributed_mapper/run_distributed_mapper.h
         src/distributed_mapper/distributed_mapper.cpp
         src/distributed_mapper/evaluation_utils.cpp
+        src/distributed_mapper/LabeledSymbol.cpp
         include/distributed_mapper/distributed_mapper_utils.h
         src/distributed_mapper/distributed_mapper_utils.cpp
         src/distributed_mapper/run_distributed_mapper.cpp

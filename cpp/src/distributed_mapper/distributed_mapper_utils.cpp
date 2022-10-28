@@ -19,13 +19,13 @@ orderRobots(const std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
   if(nr_robots > 2){
     if(use_flagged_init){
       // Adjacency matrix is such that adj_matrix(i,j) returns the number of loopclosures connecting robot i to robot j.
-      // TODO: Test if the matrix is symmetric with zero diagonal entries
+      // TODO: Test if the matrix is symmetric with Zero diagonal entries
       gtsam::Matrix adj_matrix = gtsam::Matrix::Zero(nr_robots, nr_robots);
       for(size_t robot_i = 0; robot_i < nr_robots; robot_i++){
         gtsam::Values neighbors = dist_mappers[robot_i]->neighbors(); // Get neighboring values
         for(const gtsam::Values::ConstKeyValuePair& key_value: neighbors){
-          gtsam::Key key = key_value.key;
-          char symbol = gtsam::symbolChr(key);
+          gtsam::LabeledSymbol key = key_value.key;
+          char symbol = key.robot_id();
           if(use_landmarks) symbol=tolower(symbol); // for communication links between two landmarks
           size_t robot_j = robot_names.find(symbol);
           adj_matrix(robot_i, robot_j) = adj_matrix(robot_i, robot_j) +1;
@@ -108,14 +108,21 @@ std::pair<gtsam::Values, gtsam::VectorValues> logrotation_trace(const boost::sha
   gtsam::Values current_estimate = dist_mapper_robot->currentEstimate();
   gtsam::Values distributed_robot_i = dist_mapper_robot->getConvertedEstimate(current_estimate);
   for(const gtsam::Values::ConstKeyValuePair& key_value: distributed_robot_i){
-    gtsam::Key key = key_value.key;
+    gtsam::LabeledSymbol key = key_value.key;
+    if (key == gtsam::Symbol('Z', 9999999)){
+      continue;
+    }
     distributed_iter.insert(key, distributed_robot_i.at<gtsam::Pose3>(key));
   }
   for(const gtsam::Values::ConstKeyValuePair& key_value: current_estimate){
-    gtsam::Key key = key_value.key;
+    gtsam::LabeledSymbol key = key_value.key;
+
+    if (key == gtsam::Symbol('Z', 9999999)){
+      continue;
+    }
 
     if(dist_mapper_robot->use_chr_less_full_graph_){
-      int symbolIndex = gtsam::symbolIndex(key);
+      int symbolIndex = key.index();
       distributed_vector_values_iter.insert(symbolIndex, dist_mapper_robot->linearizedRotationAt(key));
     }
     else{
@@ -169,11 +176,11 @@ void optimizeRotation(std::vector< boost::shared_ptr<DistributedMapper> >& dist_
 
       // Ask other robots for updated estimates and update it
       for(const gtsam::Values::ConstKeyValuePair& key_value: dist_mappers[robot]->neighbors()){
-        gtsam::Key key = key_value.key;
+        gtsam::LabeledSymbol key = key_value.key;
 
         // dist_mappers only contains the robots that are currently communicating, so we check
         // if the neighbor keys is from one of these robots, if so, we update it (cummunication)
-        char symbol = gtsam::symbolChr(key);
+        char symbol = key.robot_id();
         if(use_landmarks)symbol=tolower(symbol); // for communication links between two landmarks
         size_t neighboring_robot_id = robot_names.find(symbol);
         if (neighboring_robot_id != std::string::npos){ // if the robot is actually communicating
@@ -192,12 +199,12 @@ void optimizeRotation(std::vector< boost::shared_ptr<DistributedMapper> >& dist_
       if(debug)
         std::cout << "[optimizeRotation] Queried neighbors" << std::endl;
 
-      if(rotation_trace){
-        std::pair<gtsam::Values, gtsam::VectorValues> log = logrotation_trace(dist_mappers[robot]);
-        distributed_iter.insert(log.first);
-        subgraph_iter.insert(log.first);
-        distributed_vector_values_iter.insert(log.second);
-      }
+      // if(rotation_trace){
+      //   std::pair<gtsam::Values, gtsam::VectorValues> log = logrotation_trace(dist_mappers[robot]);
+      //   distributed_iter.insert(log.first);
+      //   subgraph_iter.insert(log.first);
+      //   distributed_vector_values_iter.insert(log.second);
+      // }
 
       if(debug)
         std::cout << "[optimizeRotation] Estimating rotation"  << std::endl;
@@ -298,7 +305,7 @@ void optimizeRotation(std::vector< boost::shared_ptr<DistributedMapper> >& dist_
         }
       }
 
-      if(stop && iter != 0){ // Maybe the change is wrong at zero iteration
+      if(stop && iter != 0){ // Maybe the change is wrong at Zero iteration
         break;
       }
 #endif
@@ -348,11 +355,11 @@ void optimizePose(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
 
       // Ask other robots for updated estimates and update it
       for(const gtsam::Values::ConstKeyValuePair& key_value: neighbors){
-        gtsam::Key key = key_value.key;
+        gtsam::LabeledSymbol key = key_value.key;
 
         // dist_mappers only contains the robots that are currently communicating, so we check
         // if the neighbor keys is from one of these robots, if so, we update it (communication)
-        char symbol = gtsam::symbolChr(key);
+        char symbol = key.robot_id();
         if(use_landmarks)symbol=tolower(symbol); // for communication links between two landmarks
         size_t neighboring_robot_id = robot_names.find(symbol);
         if (neighboring_robot_id != std::string::npos){ // if the robot is actually communicating
@@ -374,18 +381,18 @@ void optimizePose(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
         std::cout << "[optimizePoses] Queried neighbors"  << std::endl;
 
       // Logging
-      if(pose_trace){
-        // Convert to poses for logging
-        gtsam::VectorValues linearized_poses = dist_mappers[robot]->linearizedPoses();
-        gtsam::Values current_estimate = dist_mappers[robot]->currentEstimate();
-        gtsam::Values retracted_estimate = evaluation_utils::retractPose3Global(current_estimate, linearized_poses);
-        gtsam::Values distributed_robot_i = dist_mappers[robot]->getConvertedEstimate(retracted_estimate);
-        for(const gtsam::Values::ConstKeyValuePair& key_value: distributed_robot_i){
-          gtsam::Key key = key_value.key;
-          distributed_iter.insert(key, distributed_robot_i.at<gtsam::Pose3>(key));
-          subgraph_iter.insert(key, distributed_robot_i.at<gtsam::Pose3>(key));
-        }
-      }
+      // if(pose_trace){
+      //   // Convert to poses for logging
+      //   gtsam::VectorValues linearized_poses = dist_mappers[robot]->linearizedPoses();
+      //   gtsam::Values current_estimate = dist_mappers[robot]->currentEstimate();
+      //   gtsam::Values retracted_estimate = evaluation_utils::retractPose3Global(current_estimate, linearized_poses);
+      //   gtsam::Values distributed_robot_i = dist_mappers[robot]->getConvertedEstimate(retracted_estimate);
+      //   for(const gtsam::Values::ConstKeyValuePair& key_value: distributed_robot_i){
+      //     gtsam::LabeledSymbol key = key_value.key;
+      //     distributed_iter.insert(key, distributed_robot_i.at<gtsam::Pose3>(key));
+      //     subgraph_iter.insert(key, distributed_robot_i.at<gtsam::Pose3>(key));
+      //   }
+      // }
 
       if(debug)
         std::cout << "[optimizePoses] Estimating poses"  << std::endl;
@@ -495,6 +502,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
                      const bool& use_covariance,
                      const bool& use_pcm,
                      const bool& use_heuristics,
+                     const std::string& data_dir,
                      boost::optional<std::vector<gtsam::GraphAndValues>&> graph_and_values_vec,
                      boost::optional<std::vector<gtsam::Values>&> rotation_trace,
                      boost::optional<std::vector<gtsam::Values>&> pose_trace,
@@ -524,7 +532,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
   gtsam::GraphAndValues full_graph_and_values = evaluation_utils::readFullGraph(graph_and_values_vec.get());
 
   // Write filtered full graph
-  std::string dist_optimized = "filtered_graph_initial.g2o";
+  std::string dist_optimized = data_dir + "/filtered_graph_initial.g2o";
   gtsam::writeG2o(*(full_graph_and_values.first), *(full_graph_and_values.second), dist_optimized);
 
   if(debug)
@@ -577,7 +585,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
   // Initialize poses: this does not require communication (this part essentially computes the
   // linearization point for the following Jacobi iterations)
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // Convert to poses and update neighbors (Project to SO3 + add zero translation)
+  // Convert to poses and update neighbors (Project to SO3 + add Zero translation)
   for(size_t robot = 0; robot < nr_robots; robot++){
     dist_mappers[robot]->convertLinearizedRotationToPoses();
   }
@@ -587,7 +595,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
     gtsam::Values neighbors = dist_mappers[robot]->neighbors();
     // Ask other robots for updated estimates and update it
     for(const gtsam::Values::ConstKeyValuePair& key_value: neighbors){
-      gtsam::Key key = key_value.key;
+      gtsam::LabeledSymbol key = key_value.key;
       // pick linear rotation estimate from *robot*
       gtsam::VectorValues lin_rot_estimate_neighbor;
       lin_rot_estimate_neighbor.insert( key,  dist_mappers[robot]->neighborsLinearizedRotationsAt(key) );

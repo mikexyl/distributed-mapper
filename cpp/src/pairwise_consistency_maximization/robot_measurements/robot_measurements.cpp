@@ -27,7 +27,7 @@ void RobotMeasurements::addTransform(const gtsam::BetweenFactor<gtsam::Pose3>& f
     transform.pose.covariance_matrix = covariance_matrix;
     
     transform.is_loopclosure = false;
-    if (gtsam::Symbol(transform.i).chr() != gtsam::Symbol(transform.j).chr()) {
+    if (gtsam::LabeledSymbol(transform.i).robot_id() != gtsam::LabeledSymbol(transform.j).robot_id()) {
         transform.is_loopclosure = true;
         loop_closures_.emplace_back(std::make_pair(transform.i, transform.j));
     }
