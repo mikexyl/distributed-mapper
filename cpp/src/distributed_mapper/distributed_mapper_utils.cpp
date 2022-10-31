@@ -133,7 +133,7 @@ std::pair<gtsam::Values, gtsam::VectorValues> logrotation_trace(const boost::sha
   return std::make_pair(distributed_iter, distributed_vector_values_iter);
 }
 
-void optimizeRotation(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mappers,
+unsigned int optimizeRotation(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mappers,
                       const size_t& max_iter,
                       const size_t& nr_robots,
                       const std::string& robot_names,
@@ -147,6 +147,7 @@ void optimizeRotation(std::vector< boost::shared_ptr<DistributedMapper> >& dist_
                       boost::optional<gtsam::VectorValues&> rotation_centralized,
                       boost::optional<gtsam::GaussianFactorGraph&> rotation_graph){
 
+  unsigned int communication_bytes = 0;
   // Compute the centralized rotation error if it is available
   double centralized_error = -1;
   if(rotation_graph){
@@ -189,6 +190,8 @@ void optimizeRotation(std::vector< boost::shared_ptr<DistributedMapper> >& dist_
 
           bool neighboring_robot_initialized = dist_mappers[neighboring_robot_id]->isRobotInitialized();
           dist_mappers[robot]->updateNeighboringRobotInitialized(symbol, neighboring_robot_initialized); // this requires communication
+
+          communication_bytes += rotation_estimate.size() * sizeof(double) + sizeof(bool);
         }
         else{
           // Robot we are not communicating with are considered as optimized
@@ -312,10 +315,11 @@ void optimizeRotation(std::vector< boost::shared_ptr<DistributedMapper> >& dist_
     }
 
   }
+  return communication_bytes;
 }
 
 
-void optimizePose(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mappers,
+unsigned int optimizePose(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mappers,
                   const size_t& max_iter,
                   const size_t& nr_robots,
                   const std::string& robot_names,
@@ -328,6 +332,7 @@ void optimizePose(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
                   boost::optional<gtsam::Values&> pose_centralized,
                   boost::optional<gtsam::NonlinearFactorGraph&> pose_graph){
 
+  unsigned int communication_bytes = 0;
   // Compute the centralized pose error if it is available
   double centralized_error = -1;
   if(pose_graph){
@@ -369,6 +374,8 @@ void optimizePose(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
           dist_mappers[robot]->updateNeighboringRobotInitialized(symbol, neighboring_robot_initialized); // this requires communication
           //std::cout << "Robot " << neighboring_robot_id << " at " << key << ". Est[0]=" << poseEstimate << std::endl;
           //std::cout << "Robot " << neighboring_robot_id << " is init? " << neighboring_robot_initialized << std::endl;
+
+          communication_bytes += poseEstimate.size() * sizeof(double) + sizeof(bool);
         }
         else{
           // Robot we are not communicating with are considered as optimized
@@ -483,6 +490,7 @@ void optimizePose(std::vector< boost::shared_ptr<DistributedMapper> >& dist_mapp
     }
 
   }
+  return communication_bytes;
 }
 
 
@@ -563,7 +571,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
   }
 
   // Optimize it
-  optimizeRotation(dist_mappers,
+  unsigned int rotation_bytes_communicated = optimizeRotation(dist_mappers,
                    max_iter,
                    nr_robots,
                    robot_names,
@@ -624,7 +632,7 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
     }
   }
 
-  optimizePose(dist_mappers,
+  unsigned int pose_bytes_communicated = optimizePose(dist_mappers,
                max_iter,
                nr_robots,
                robot_names,
@@ -650,6 +658,14 @@ distributedOptimizer(std::vector< boost::shared_ptr<DistributedMapper> >& dist_m
   for(size_t robot = 0; robot < nr_robots; robot++){
     estimates[robot] = dist_mappers[robot]->currentEstimate();
   }
+
+  unsigned int total_bytes_communicated = rotation_bytes_communicated + pose_bytes_communicated;
+  // Write total_communication_bytes to file
+  std::ofstream outfile;
+  outfile.open(data_dir + "/dist_mapper_total_communication_bytes.txt", std::ios_base::out); 
+  outfile << total_bytes_communicated << std::endl; 
+  outfile.close();
+
 
   return estimates;
 }
