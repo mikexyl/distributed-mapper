@@ -1,0 +1,21 @@
+version: "3"
+
+tasks:
+  build-Release:
+    dir: cpp
+    cmds:
+      - cmake --preset config-Release
+      - cmake --build --preset build-Release
+
+  build-Debug:
+    dir: cpp
+    cmds:
+      - cmake --preset config-Debug
+      - cmake --build --preset build-Debug
+
+  run:
+    dir: build
+    cmds:
+      - ./robust_distributed_optimization_example --dataDir {{.dataDir}} --nrRobots 5 --usePCM 1 --confidence 0.75 --useChrLessFullGraph 1
+    vars:
+      dataDir: /workspaces/src/aria_dopt/data/kitti_00_3d_dgs/5/

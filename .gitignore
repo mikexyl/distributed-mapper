@@ -18,3 +18,5 @@ data/example_49robots/fullGraph.g2o
 ./*_data/*/*/*/*optimized*
 ./log/test*
 ./octave/octave-workspace
+
+.cache
